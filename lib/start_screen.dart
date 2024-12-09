@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:solana/solana.dart';
+
 import 'src/settings/settings_controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'src/settings/settings_view.dart';
 import 'src/home.dart';
-import 'src/settings/settings_service.dart';
+// import 'package:solana_web3/solana_web3.dart' as web3;
+import 'services/solana_rpc_client.dart';
 
 
 class StartScreen extends StatelessWidget {
+  final SettingsController settingsController;
+  final SolanaRpcClient solanaClient;
+
   const StartScreen({
     super.key,
-    required this.settingsController});
+    required this.settingsController,
+    required this.solanaClient,
+  });
 
-    final SettingsController settingsController;
+  Future<void> _checkBalance(String address) async {
+    try {
+      final balance = await solanaClient.getBalance(address);
+      print('Balance: $balance SOL');
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

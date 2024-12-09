@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: ed25519_hd_key
-      sha256: "31e191ec97492873067e46dc9cc0c7d55170559c83a478400feffa0627acaccf"
+      sha256: c5c9f11a03f5789bf9dcd9ae88d641571c802640851f1cacdb13123f171b3a26
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.2.1"
   fake_async:
     dependency: transitive
     description:
@@ -169,7 +169,7 @@ packages:
     source: hosted
     version: "0.2.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
@@ -276,10 +276,10 @@ packages:
     dependency: transitive
     description:
       name: pinenacl
-      sha256: "57e907beaacbc3c024a098910b6240758e899674de07d6949a67b52fd984cbdf"
+      sha256: "3a5503637587d635647c93ea9a8fecf48a420cc7deebe6f1fc85c2a5637ab327"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "0.5.1"
   pointycastle:
     dependency: transitive
     description:

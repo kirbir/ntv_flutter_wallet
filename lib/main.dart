@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:solana/solana.dart';
+
+// import 'package:solana_web3/solana_web3.dart' as web3;
 import 'src/settings/settings_service.dart';
 import 'src/settings/settings_controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'start_screen.dart';
+import 'services/solana_rpc_client.dart';
 
 void main() async {
   // Set up the SettingsController, which will glue user settings to multiple
@@ -16,19 +18,13 @@ void main() async {
 
    await settingsController.loadSettings();
 
-  // WOO Load the environment variables
-
-
-  // runApp(WooApp(wooCommerceService: wooCommerceService));
-
-  // WOO End
-
-  // Run the app and pass in the SettingsController. The app listens to the
-  // SettingsController for changes, then passes it further down to the
-  // SettingsView.
+  // Initialize our RPC client instead of the web3 connection
+  final solanaClient = SolanaRpcClient();
 
   runApp(
-    StartScreen(settingsController: settingsController ));
-
-  
+    StartScreen(
+      settingsController: settingsController,
+      solanaClient: solanaClient,
+    ),
+  );
 }
