@@ -53,7 +53,7 @@ class SolanaRpcClient {
 
   Future<String> requestAirdrop(String address, int lamports) async {
     final result = await _call('requestAirdrop', [address, lamports]);
-    return result as String;  // Returns transaction signature
+    return result as String; // Returns transaction signature
   }
 
   Future<Map<String, dynamic>?> getTransaction(String signature) async {
