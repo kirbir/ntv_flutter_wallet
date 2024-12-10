@@ -3,7 +3,7 @@
 NTV Forritun 1. Önn 2024 - Lokaverkefni 
 Birkir Reynisson
 
-<img src="https://github.com/user-attachments/assets/65e01cb9-66c6-43a8-baf1-ba8f886dba3f" width="100" alt="Prototype layout of home screen - Made in FIGMA">
+<img src="https://github.com/user-attachments/assets/65e01cb9-66c6-43a8-baf1-ba8f886dba3f" width="180" alt="Prototype layout of home screen - Made in FIGMA">
 
 
 ## Features
