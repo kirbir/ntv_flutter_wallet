@@ -44,9 +44,10 @@ Birkir Reynisson
 ## Tech Stack
 
 ### Core Dependencies
+- solana: Solana blockchain interaction / https://pub.dev/packages/solana
 - go_router: Navigation and routing
 - flutter_secure_storage: Secure local storage
-- solana: Solana blockchain interaction
+
 
 ## Development
 
