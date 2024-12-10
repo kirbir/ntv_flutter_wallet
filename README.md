@@ -3,6 +3,9 @@
 NTV Forritun 1. Önn 2024 - Lokaverkefni 
 Birkir Reynisson
 
+![figma_prototype_layout](https://github.com/user-attachments/assets/65e01cb9-66c6-43a8-baf1-ba8f886dba3f)
+
+
 ## Features
 
 ### Core Functionality
