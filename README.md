@@ -4,6 +4,7 @@ NTV Forritun 1. Önn 2024 - Lokaverkefni
 Birkir Reynisson
 
 ![figma_prototype_layout](https://github.com/user-attachments/assets/65e01cb9-66c6-43a8-baf1-ba8f886dba3f)
+<img src="https://github.com/user-attachments/assets/65e01cb9-66c6-43a8-baf1-ba8f886dba3f" width="70">
 
 
 ## Features
@@ -21,7 +22,6 @@ Birkir Reynisson
 - Secure storage of credentials
 - Export/backup private key
 - View 12-word secret phrase
-- Network status indicator (Testnet/Mainnet/Devnet)
 
 ### Asset Management
 - View SOL balance
@@ -35,6 +35,7 @@ Birkir Reynisson
   - Date/time localization (in progress)
 
 ### Planned Features
+- Network status indicator (Testnet/Mainnet/Devnet)
 - Token statistics via CoinGecko API
 - Live prices for:
   - Solana
