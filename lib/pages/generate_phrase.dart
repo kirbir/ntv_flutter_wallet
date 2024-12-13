@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:go_router/go_router.dart';
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 
 class GeneratePhraseScreen extends StatefulWidget {
   const GeneratePhraseScreen({super.key});
@@ -23,7 +24,7 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Recovery Phrase")),
+      appBar: CustomAppBar(title: 'Login', showSettings: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

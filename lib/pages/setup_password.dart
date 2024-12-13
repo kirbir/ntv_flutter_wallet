@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 
 class SetupPasswordScreen extends StatefulWidget {
   final String? mnemonic;
-  SetupPasswordScreen({super.key, required this.mnemonic});
+  const SetupPasswordScreen({super.key, required this.mnemonic});
 
   @override
   State<SetupPasswordScreen> createState() => _SetupPasswordScreenState();
@@ -14,13 +15,13 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
   final formKey = GlobalKey<FormState>();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final storage = FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Set Up Password')),
+      appBar: const CustomAppBar(title: 'Create a new password', showSettings: true),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: formKey,
           child: Column(
@@ -28,7 +29,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
               TextFormField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: const InputDecoration(labelText: 'Password'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Password is required';
@@ -69,9 +70,11 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
         return;
       }
 
-      await storage.write(key: 'password', value: passwordController.text);
-      await storage.write(key: 'mnemonic', value: widget.mnemonic);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('password', passwordController.text);
+      await prefs.setString('mnemonic', widget.mnemonic!);
 
+      if (!mounted) return; //Check if the widget is mounted
       GoRouter.of(context).push("/");
     }
   }

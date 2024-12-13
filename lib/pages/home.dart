@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
-import 'package:ntv_flutter_wallet/settings/settings_controller.dart';
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.settingsController});
-      final SettingsController settingsController;
+  const HomeScreen({super.key});
+
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,8 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _publicKey;
   String? _balance;
   SolanaClient? client;
-  final storage = const FlutterSecureStorage();
-
 
   @override
   void initState() {
@@ -30,21 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              GoRouter.of(context).push("/settings");
-            },
-            icon: Icon(Icons.settings),
-          )
-        ],
-        title: const Text('My Wallet'),
-      ),
+       appBar: CustomAppBar(title: 'Login', showSettings: true),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: ListView(
           children: [
+            const Image(image: AssetImage('assets/images/Viking.png')),
             Card(
               child: Padding(
                 padding: EdgeInsets.all(8),
@@ -124,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _readPk() async {
-    final mnemonic = await storage.read(key: 'mnemonic');
+    final prefs = await SharedPreferences.getInstance();
+    final mnemonic = prefs.getString('mnemonic');
     if (mnemonic != null) {
       final keypair = await Ed25519HDKeyPair.fromMnemonic(mnemonic);
       setState(() {

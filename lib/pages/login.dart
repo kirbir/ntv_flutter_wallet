@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String? password;
   bool _loading = true;
   String? key;
-  final storage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     _checkForSavedLogin().then((credentialsFound) {
       if (!credentialsFound) {
-        GoRouter.of(context).go("/setup");
+        GoRouter.of(context).push("/setup");
       } else {
         setState(() {
           _loading = false;
@@ -34,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
@@ -41,12 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
     return Scaffold(
+      appBar: CustomAppBar(title: 'Login', showSettings: true),
       body: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 40),
           Center(
             child: Image.asset(
-              'assets/QuickNodeLogo.png',
+              'assets/images/Viking.png',
               width: 200,
             ),
           ),
@@ -83,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                           return;
                         }
-                        GoRouter.of(context).go("/home");
+                        GoRouter.of(context).push("/home");
                         // Validation
                       }),
                   const SizedBox(height: 8),
@@ -113,8 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<bool> _checkForSavedLogin() async {
-    key = await storage.read(key: 'mnemonic');
-    password = await storage.read(key: 'password');
+    final prefs = await SharedPreferences.getInstance();
+    key = prefs.getString('mnemonic');
+    password = prefs.getString('password');
     if (key == null || password == null) {
       return false;
     } else {

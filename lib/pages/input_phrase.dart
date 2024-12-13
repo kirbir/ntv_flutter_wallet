@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 
 class InputPhraseScreen extends StatefulWidget {
   const InputPhraseScreen({super.key});
@@ -17,6 +18,7 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: 'Login', showSettings: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
