@@ -5,10 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,21 +18,52 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _publicKey;
   String? _balance;
   SolanaClient? client;
+  Color connectionColor = Colors.red;
+  bool isConnected = false;
+
+  Network currentNetwork = Network.devnet;
+  final String syndicaApiKey = dotenv.env['SYNDICA_API_KEY'] ?? '';
+
+
 
   @override
   void initState() {
     super.initState();
+    _checkConnection();
+    _initializeClient(currentNetwork);
     _readPk();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: CustomAppBar(title: 'Login', showSettings: true),
+      appBar: const CustomAppBar(title: 'Dashboard', showSettings: true),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            Icon(Icons.link_outlined, size: 100, color: connectionColor),
+            Center(
+              widthFactor: 20,
+              child: DropdownButton<Network>(
+                value: currentNetwork,
+                items: Network.values
+                    .map((network) => DropdownMenuItem(
+                          value: network,
+                          child: Text(network.label),
+                        ))
+                    .toList(),
+                onChanged: (newNetwork) {
+                  if (newNetwork != null) {
+                    setState(() {
+                      currentNetwork = newNetwork;
+                    });
+                      _initializeClient(currentNetwork); // Reinitialize client with new network
+                      _checkConnection(); // Check connection when network changes
+                      }
+                    }
+              ),
+            ),
             const Image(image: AssetImage('assets/images/Viking.png')),
             Card(
               child: Padding(
@@ -91,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Card(
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -120,29 +151,94 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _publicKey = keypair.address;
       });
-      _initializeClient();
+      _initializeClient(currentNetwork);
     }
   }
 
-  void _initializeClient() async {
+  void _initializeClient(Network network) async {
     await dotenv.load(fileName: ".env");
-
-    client = SolanaClient(
-      rpcUrl: Uri.parse(dotenv.env['QUICKNODE_RPC_URL'].toString()),
-      websocketUrl: Uri.parse(dotenv.env['QUICKNODE_RPC_WSS'].toString()),
-    );
-    _getBalance();
+    try {
+      print('Initializing client for ${currentNetwork.label}');
+      client = SolanaClient(
+        rpcUrl: Uri.parse(currentNetwork.url),
+        websocketUrl: Uri.parse('wss://${currentNetwork.url.substring(8)}'),
+      );
+      _getBalance();
+    } on JsonRpcException catch (e,s) {
+      print('Error initializing client: ${e.message} code: ${e.code} stacktrace: $s');
+      setState(() {
+        connectionColor = Colors.red;
+      });
+    }
   }
 
   void _getBalance() async {
-    setState(() {
-      _balance = null;
-    });
+    try {
+      setState(() {
+        _balance = null;
+      });
     final getBalance = await client?.rpcClient
         .getBalance(_publicKey!, commitment: Commitment.confirmed);
     final balance = (getBalance!.value) / lamportsPerSol;
     setState(() {
-      _balance = balance.toString();
-    });
+        _balance = balance.toString();
+      });
+    } on HttpException catch (e,s) {
+      print('Error getting balance: ${e}stacktrace: $s');
+      setState(() {
+        connectionColor = Colors.red;
+      });
+    }
+  }
+
+  Future<void> _checkConnection() async {
+    try {
+      print('Checking connection for ${currentNetwork.label}');
+      final response = await client?.rpcClient.getHealth();
+      if (response == 'ok') {
+        setState(() {
+          print('Node is healthy');
+          connectionColor = Colors.green; // Node is healthy
+        });
+      } else {
+        setState(() {
+          connectionColor = Colors.red; // Node is unhealthy or error occurred
+        });
+        throw Exception('Node is unhealthy');
+      }
+    } 
+    on HttpException catch (e,s) {  
+      print('Error checking connection: ${e} stacktrace: $s');
+      setState(() {
+        connectionColor = Colors.red; // Node is unhealthy or error occurred
+      });
+    }
+  }
+}
+enum Network {
+  mainnet,
+  devnet,
+  testnet;
+
+  String get url {
+    switch (this) {
+      case Network.mainnet:
+        return 'https://solana-mainnet.api.syndica.io/api-key/'+syndicaApiKey;
+      case Network.devnet:
+        return 'https://api.devnet.solana.com';
+      case Network.testnet:
+        return 'https://api.testnet.solana.com';
+    }
+  }
+
+  String get label {
+    switch (this) {
+      case Network.mainnet:
+        return 'Mainnet';
+      case Network.devnet:
+        return 'Devnet';
+      case Network.testnet:
+        return 'Testnet';
+    }
   }
 }

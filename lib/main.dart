@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ntv_flutter_wallet/settings/settings_view.dart';
 import 'settings/settings_service.dart';
 import 'settings/settings_controller.dart';
+import 'settings/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/pages/generate_phrase.dart';
 import 'package:ntv_flutter_wallet/pages/home.dart';
@@ -28,7 +29,7 @@ void main() async {
     print("DEMO_PHRASE: ${dotenv.env['DEMO_PHRASE']}"); // Debug print
   } catch (e) {
     print("Failed to load .env file: $e"); // Debug print
-    var loadError = "Failed to load .env file: $e";
+
   }
 
   runApp(
@@ -90,14 +91,17 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, _) {
         return MaterialApp.router(
           theme: ThemeData.light(), // Add light theme
-          darkTheme: ThemeData.dark().copyWith(
-            elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueGrey[500],
-            )),
-            primaryColor: Colors.grey[900],
-            scaffoldBackgroundColor: Colors.grey[850],
-          ),
+          darkTheme: AppTheme.darkTheme,
+          //  ThemeData.dark().copyWith(
+            
+          //   elevatedButtonTheme: ElevatedButtonThemeData(
+          //       style: ElevatedButton.styleFrom(
+          //     backgroundColor: Colors.blueGrey[500],
+          //   )),
+
+          //   primaryColor: Colors.grey[900],
+          //   scaffoldBackgroundColor: Colors.grey[850],
+          // ),
           themeMode: settingsController.themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: _router,
