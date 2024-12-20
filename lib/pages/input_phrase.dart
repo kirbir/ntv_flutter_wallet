@@ -18,7 +18,7 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Login', showSettings: true),
+      appBar: const CustomAppBar(title: 'Login', showSettings: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -57,15 +57,15 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
             ),
           ),
           Text(validationFailed ? 'Invalid keyphrase' : '',
-              style: TextStyle(color: Colors.red)),
-          Spacer(),
+              style: const TextStyle(color: Colors.red)),
+          const Spacer(),
           SizedBox(
             width: 200,
             child: TextButton(
               onPressed: () {
                 _onSubmit(context);
               },
-              child: Text('Continue'),
+              child: const Text('Continue'),
             ),
           ),
         ],

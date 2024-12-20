@@ -9,7 +9,7 @@ class SetUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Login', showSettings: true),
+      appBar: const CustomAppBar(title: 'Login', showSettings: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +42,7 @@ class SetUpScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                      SnackBar(
                       content: Text('Failed to load .env file, error is: $e'),
-                      duration: Duration(seconds: 3),
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 }

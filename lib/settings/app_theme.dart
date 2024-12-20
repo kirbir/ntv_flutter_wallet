@@ -27,7 +27,7 @@ class AppTheme {
         ),
         brightness: Brightness.dark,
         canvasColor: AppColors.lightGreyDarkMode,
-        colorScheme: ColorScheme.dark(
+        colorScheme: const ColorScheme.dark(
           secondary: AppColors.darkPink,
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -44,7 +44,7 @@ class AppTheme {
         ),
         canvasColor: AppColors.white,
         brightness: Brightness.light,
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           secondary: AppColors.grey2,
         ),
         iconTheme: const IconThemeData(color: Colors.black),

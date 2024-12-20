@@ -22,16 +22,17 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
     _generateMnemonic();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Login', showSettings: true),
+      appBar: const CustomAppBar(title: 'Login', showSettings: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Flexible(
             child: Container(
               color: Colors.orange[700],
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: const Text(
                 'Important! Copy and save the recovery phrase in a secure location. This cannot be recovered later.',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -43,7 +44,7 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
             children: [
               Center(
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Text(
                     _mnemonic,
                     textAlign: TextAlign.justify,

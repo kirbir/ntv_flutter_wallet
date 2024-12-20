@@ -14,7 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       if (showSettings)
         IconButton(
             onPressed: () => GoRouter.of(context).push("/settings"),
-            icon: Icon(Icons.settings))
+            icon: const Icon(Icons.settings))
     ]);
   }
 

@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
 
     _checkForSavedLogin().then((credentialsFound) {
+      if (!mounted) return;
       if (!credentialsFound) {
         GoRouter.of(context).push("/setup");
       } else {
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
     return Scaffold(
-      appBar: CustomAppBar(title: 'Login', showSettings: true),
+      appBar: const CustomAppBar(title: 'Login', showSettings: true),
       body: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 40),
@@ -83,10 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {
                             validationFailed = true;
                           });
-                          return;
+                          return 'Invalid Password';
                         }
-                        GoRouter.of(context).push("/home");
-                        // Validation
+                        setState(() {
+                          validationFailed = false;
+                        });
+                        return null;
                       }),
                   const SizedBox(height: 8),
                   Text(validationFailed ? 'Invalid Password' : '',
@@ -100,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        onDifferentAccountPressed(context);
+                        _onDifferentAccountPressed(context);
                       },
                       child: const Text('Use different Account'),
                     ),
@@ -125,35 +128,38 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<dynamic> onDifferentAccountPressed(BuildContext context) async {
+  Future<dynamic> _onDifferentAccountPressed(BuildContext context) async {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Warning'),
-            content: const Text(
-                'Access to current account will be lost if seed phrase is lost.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  GoRouter.of(context).go("/setup");
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Warning'),
+          content: const Text(
+            'Access to current account will be lost if seed phrase is lost.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                GoRouter.of(context).go("/setup");
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _onSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-    }
+void _onSubmit() {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+    GoRouter.of(context).push("/home");  
   }
+}
 }

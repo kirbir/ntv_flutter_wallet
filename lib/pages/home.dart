@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   SolanaClient? client;
   Color connectionColor = Colors.red;
   bool isConnected = false;
+  int _selectedIndex = 0;
 
   Network currentNetwork = Network.devnet;
   final String syndicaApiKey = dotenv.env['SYNDICA_API_KEY'] ?? '';
@@ -64,10 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
               ),
             ),
-            const Image(image: AssetImage('assets/images/Viking.png')),
             Card(
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
                     const Text('Wallet Address',
@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Card(
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
                     const Text('Balance',
@@ -139,6 +139,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+        bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Business',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Send',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -208,10 +227,24 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } 
     on HttpException catch (e,s) {  
-      print('Error checking connection: ${e} stacktrace: $s');
+      print('Error checking connection: $e stacktrace: $s');
       setState(() {
         connectionColor = Colors.red; // Node is unhealthy or error occurred
       });
+    }
+  }
+
+ void _onItemTapped(int index) async {
+    setState(() {
+      _selectedIndex = index;
+    });
+    
+      if (index == 2) { // Send tab
+      await showSendDialog(
+        context,
+        client,
+        () => _getBalance(),  // Pass the callback to refresh balance
+      );
     }
   }
 }
@@ -223,7 +256,7 @@ enum Network {
   String get url {
     switch (this) {
       case Network.mainnet:
-        return 'https://solana-mainnet.api.syndica.io/api-key/'+syndicaApiKey;
+        return 'https://solana-mainnet.api.syndica.io/api-key/3ZB8nwaToy52SC7swNrgP2hNMQY7JUvwRDaaoEum2AHJiaL3xPoKUXXLRfCJspgyoXFr6WphXyLhHcJqhiFVXRLKd2XbjRRP3ro';
       case Network.devnet:
         return 'https://api.devnet.solana.com';
       case Network.testnet:

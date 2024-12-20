@@ -54,7 +54,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _submit,
-                child: Text('Submit'),
+                child: const Text('Submit'),
               )
             ],
           ),
