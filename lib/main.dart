@@ -105,6 +105,7 @@ class MyApp extends StatelessWidget {
           themeMode: settingsController.themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: _router,
+          
         );
       },
     );

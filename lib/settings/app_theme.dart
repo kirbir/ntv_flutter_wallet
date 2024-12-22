@@ -11,12 +11,24 @@ class AppColors {
 
 class AppTheme {
   static ThemeData get darkTheme => ThemeData(
-    cardTheme: const CardTheme(
-      surfaceTintColor: Colors.transparent,
-      color: Color.fromARGB(255, 21, 25, 27),
-      elevation: 4,
-      shadowColor:  Color.fromARGB(255, 113, 188, 218)
-    ),
+        // E L E V A T E D - B U T T O N
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            backgroundColor: const Color.fromARGB(255, 90, 86, 62),
+            foregroundColor: Colors.white,
+            shadowColor: const Color.fromARGB(255, 51, 49, 36),
+            elevation: 5,
+          ),
+        ),
+        // C A R D S
+        cardTheme: const CardTheme(
+            surfaceTintColor: Colors.transparent,
+            color: Color.fromARGB(255, 21, 25, 27),
+            elevation: 4,
+            shadowColor: Color.fromARGB(255, 113, 188, 218)),
         primarySwatch: Colors.grey,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.textBlack,

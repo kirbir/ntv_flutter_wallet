@@ -11,7 +11,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final _formKey = GlobalKey<FormState>();
   final passwordController = TextEditingController();
   bool validationFailed = false;
@@ -53,11 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 200,
             ),
           ),
-          const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
+          Container(
+            alignment: Alignment.center,
+            child: const Text(
               'Login',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -73,40 +72,66 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value != password) {
-                          setState(() {
-                            validationFailed = true;
-                          });
-                          return 'Invalid Password';
-                        }
+                    controller: passwordController,
+                    obscureText: true,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      alignLabelWithHint: true,
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value != password) {
                         setState(() {
-                          validationFailed = false;
+                          validationFailed = true;
                         });
-                        return null;
-                      }),
+                        return 'Invalid Password';
+                      }
+                      setState(() {
+                        validationFailed = false;
+                      });
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 8),
                   Text(validationFailed ? 'Invalid Password' : '',
                       style: const TextStyle(color: Colors.red)),
                   const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _onSubmit,
-                    child: const Text('Login'),
-                  ),
-                  const SizedBox(height: 32),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _onDifferentAccountPressed(context);
-                      },
-                      child: const Text('Use different Account'),
+                  Container(
+                    height: 120,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              onPressed: _onSubmit,
+                              child: const Text('Login'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              onPressed: () => _onDifferentAccountPressed(context),
+                              child: const Text('Use different Account'),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(
+                    width: 8,
                   ),
                 ],
               ),
@@ -156,10 +181,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-void _onSubmit() {
-  if (_formKey.currentState!.validate()) {
-    _formKey.currentState!.save();
-    GoRouter.of(context).push("/home");  
+  void _onSubmit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      GoRouter.of(context).push("/home");
+    }
   }
-}
 }
