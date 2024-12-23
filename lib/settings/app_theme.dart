@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-
-class AppColors {
-  static const Color textBlack = Colors.black;
-  static const Color textGrey = Colors.grey;
-  static const Color white = Colors.white;
-  static const Color lightGreyDarkMode = Color(0xFF303030);
-  static const Color darkPink = Color(0xFFE91E63);
-  static const Color grey2 = Color(0xFFBDBDBD);
-}
+import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get darkTheme => ThemeData(
@@ -24,41 +16,86 @@ class AppTheme {
           ),
         ),
         // C A R D S
-        cardTheme: const CardTheme(
-            surfaceTintColor: Colors.transparent,
-            color: Color.fromARGB(255, 21, 25, 27),
-            elevation: 4,
-            shadowColor: Color.fromARGB(255, 113, 188, 218)),
+        cardTheme: CardTheme(
+          surfaceTintColor: Colors.transparent,
+          color: Colors.transparent,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          shadowColor: AppColors.gray800,
+          clipBehavior: Clip.antiAlias,
+        ),
         primarySwatch: Colors.grey,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.textBlack,
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppColors.surfaceDark,
+          foregroundColor: AppColors.textPrimary,
         ),
         inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: AppColors.textGrey),
-          labelStyle: TextStyle(color: AppColors.white),
+          hintStyle: TextStyle(color: AppColors.gray500),
+          labelStyle: TextStyle(color: AppColors.textPrimary),
         ),
         brightness: Brightness.dark,
-        canvasColor: AppColors.lightGreyDarkMode,
+        canvasColor: AppColors.surfaceDark,
         colorScheme: const ColorScheme.dark(
-          secondary: AppColors.darkPink,
+          secondary: Color.fromARGB(255, 122, 101, 28),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
+        scaffoldBackgroundColor: AppColors.backgroundDark,
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: AppColors.textPrimary),
+          bodyMedium: TextStyle(color: AppColors.textSecondary),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: AppColors.surfaceDark,
+          selectedItemColor: AppColors.warning,
+          unselectedItemColor: AppColors.gray500,
+          selectedIconTheme: IconThemeData(
+            color: AppColors.warning,
+            size: 28,
+          ),
+          unselectedIconTheme: IconThemeData(
+            color: AppColors.gray500,
+            size: 24,
+          ),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          elevation: 8,
+        ),
       );
 
   static ThemeData get lightTheme => ThemeData(
         primarySwatch: Colors.grey,
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.grey2,
+          backgroundColor: Colors.grey,
         ),
         inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: AppColors.textGrey),
-          labelStyle: TextStyle(color: AppColors.white),
+          hintStyle: TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(color: Colors.white),
         ),
-        canvasColor: AppColors.white,
+        canvasColor: Colors.white,
         brightness: Brightness.light,
         colorScheme: const ColorScheme.light(
-          secondary: AppColors.grey2,
+          secondary: Colors.grey,
         ),
         iconTheme: const IconThemeData(color: Colors.black),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.white,
+          selectedItemColor: AppColors.primaryBlue,
+          unselectedItemColor: AppColors.gray600,
+          selectedIconTheme: IconThemeData(
+            color: AppColors.primaryBlue,
+            size: 28,
+          ),
+          unselectedIconTheme: IconThemeData(
+            color: AppColors.gray600,
+            size: 24,
+          ),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          elevation: 8,
+        ),
       );
 }
