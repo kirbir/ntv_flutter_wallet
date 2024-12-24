@@ -5,8 +5,10 @@ import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
+import 'package:solana/dto.dart';
 import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
+import 'package:ntv_flutter_wallet/widgets/price_ticker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   num? solBalance;
   num solDollarPrice = 0;
+  Map<String, double> _tokenBalances = {};
+  Map<String, double> _coinPrices = {};
 
   Color get rpcColor => _isHealthy ? Colors.greenAccent : Colors.redAccent;
 
@@ -39,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future(() => _readPk());
     await Future(() => _initializeClient(currentNetwork));
     await Future(() => _checkConnection());
-    _loadPrices();
+    await Future(() => _loadPrices());
   }
 
   @override
@@ -110,95 +114,104 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
+        child: Column(
           children: [
-            Card.outlined(
-              child: Column(
+            Expanded(
+              child: ListView(
                 children: [
-                  const Text('Wallet Address',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                          width: 320, child: Text(_publicKey ?? 'Loading...')),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: IconButton.filledTonal(
-                      tooltip: 'Send crypto to another address',
-                      highlightColor: Colors.amber,
-                      onPressed: () async {
-                        // Send tab
-                        await showSendDialog(
-                          context,
-                          client,
-                          () =>
-                              _getBalance(), // Pass the callback to refresh balance
-                        );
-                      },
-                      icon: Icon(Icons.send_outlined),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        children: [
+                          const Text('Balance',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '\$ ${solBalance?.truncateToDouble() ?? 0.0}',
+                                style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.refresh),
+                                onPressed: () {
+                                  _getBalance();
+                                },
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text('SOL: $_balance ' ?? 'Loading...'),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: IconButton.filledTonal(
-                      icon: const Icon(Icons.copy),
-                      onPressed: () {
-                        if (_publicKey != null) {
-                          Clipboard.setData(ClipboardData(text: _publicKey!));
-                        }
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    const Text('Balance',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Card.outlined(
+                    child: Column(
                       children: [
-                        Text(
-                          '\$ ${solBalance?.truncateToDouble() ?? 0.0}',
-                          style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28),
+                        const Text('Wallet Address',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                                width: 320,
+                                child: Text(_publicKey ?? 'Loading...')),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.refresh),
-                          onPressed: () {
-                            _getBalance();
-                          },
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: IconButton.outlined(
+                            tooltip: 'Send crypto to another address',
+                            onPressed: () async {
+                              // Send tab
+                              await showSendDialog(
+                                context,
+                                client,
+                                () =>
+                                    _getBalance(), // Pass the callback to refresh balance
+                              );
+                            },
+                            icon: Icon(Icons.send_outlined),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: IconButton.outlined(
+                            icon: const Icon(Icons.copy),
+                            onPressed: () {
+                              if (_publicKey != null) {
+                                Clipboard.setData(
+                                    ClipboardData(text: _publicKey!));
+                              }
+                            },
+                          ),
                         )
                       ],
                     ),
-                    Row(
-                      children: [
-                        Text('SOL: $_balance ' ?? 'Loading...'),
-                      ],
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+            PriceTicker(prices: _coinPrices),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -227,7 +240,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   Future<void> _readPk() async {
     final prefs = await SharedPreferences.getInstance();
     final mnemonic = prefs.getString('mnemonic');
@@ -241,7 +253,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initializeClient(Network network) async {
-    await dotenv.load(fileName: ".env");
     try {
       print('Initializing client for ${currentNetwork.label}');
       client = SolanaClient(
@@ -264,16 +275,66 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _balance = null;
       });
+
+      // Get SOL balance
       final getBalance = await client?.rpcClient
           .getBalance(_publicKey!, commitment: Commitment.confirmed);
 
-      final balance = (getBalance!.value) / lamportsPerSol;
+      // Get token accounts
+      final filter = TokenAccountsFilter.byProgramId(
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+      );
 
+      final tokenAccounts = await client?.rpcClient.getTokenAccountsByOwner(
+        _publicKey!,
+        filter,
+        encoding: Encoding.jsonParsed,
+        commitment: Commitment.confirmed,
+      );
+
+      // Process token accounts
+      if (tokenAccounts != null) {
+        for (final account in tokenAccounts.value) {
+          if (account.account.data is ParsedAccountData) {
+            final parsedData = account.account.data as ParsedAccountData;
+
+            // Debug print the entire structure
+            print('Full parsed data structure: ${parsedData.toJson()}');
+            print('Parsed type: ${parsedData.runtimeType}');
+
+            // Try accessing the parsed data directly
+            final parsed = parsedData.parsed;
+            if (parsed != null) {
+              print('Parsed content: $parsed');
+
+              // Try to access as Map
+              if (parsed is Map<String, dynamic>) {
+                final info = parsed['info'] as Map<String, dynamic>?;
+                if (info != null) {
+                  final mint = info['mint'] as String?;
+                  final tokenAmount =
+                      info['tokenAmount'] as Map<String, dynamic>?;
+
+                  if (mint != null && tokenAmount != null) {
+                    final amount = tokenAmount['uiAmount'] as double?;
+                    print('Found token: $mint with amount: $amount');
+
+                    if (amount != null) {
+                      _tokenBalances[mint] = amount;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Update SOL balance
+      final balance = (getBalance!.value) / lamportsPerSol;
       setState(() {
         _balance = balance.toString();
-        solBalance = balance *
-            (solDollarPrice ??
-                0); // Total balance of wallet worth in Dollars, checking sol's live price.
+        solBalance = balance * (solDollarPrice ?? 0);
       });
     } on HttpException catch (e, s) {
       print('Error getting balance: ${e}stacktrace: $s');
@@ -308,18 +369,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadPrices() async {
-    // TODO Maybe this should just return price
     try {
       // Get single coin price
       double solanaPrice = await TokenService.getSolanaPrice();
       print('Solana price: \$$solanaPrice');
-      setState(() {
-        // TODO Might not need this if method returns price
-        solDollarPrice = solanaPrice;
-      });
 
       // Get multiple coin prices
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
+
+      setState(() {
+        solDollarPrice = solanaPrice;
+        _coinPrices = prices; // Update the state with new prices
+      });
+
       prices.forEach((coin, price) {
         print('$coin: \$$price');
       });
@@ -349,9 +411,9 @@ class _HomeScreenState extends State<HomeScreen> {
         client,
         () => _getBalance(), // Pass the callback to refresh balance
       );
-    if (index == 3) {
+      if (index == 3) {
         GoRouter.of(context).push("/");
-    }
+      }
     }
   }
 }

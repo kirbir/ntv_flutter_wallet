@@ -29,7 +29,6 @@ void main() async {
     print("DEMO_PHRASE: ${dotenv.env['DEMO_PHRASE']}"); // Debug print
   } catch (e) {
     print("Failed to load .env file: $e"); // Debug print
-
   }
 
   runApp(
@@ -93,7 +92,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData.light(), // Add light theme
           darkTheme: AppTheme.darkTheme,
           //  ThemeData.dark().copyWith(
-            
+
           //   elevatedButtonTheme: ElevatedButtonThemeData(
           //       style: ElevatedButton.styleFrom(
           //     backgroundColor: Colors.blueGrey[500],
@@ -105,7 +104,6 @@ class MyApp extends StatelessWidget {
           themeMode: settingsController.themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: _router,
-          
         );
       },
     );
