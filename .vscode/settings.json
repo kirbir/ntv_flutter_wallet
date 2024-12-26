@@ -1,3 +1,5 @@
 {
-    "avdmanager.sdkManager": "c:\\Android\\sdk\\cmdline-tools\\latest\\bin\\avdmanager.bat"
+  "avdmanager.sdkManager": "c:\\Android\\Sdk\\cmdline-tools\\latest\\bin\\avdmanager.bat",
+  "cmake.ignoreCMakeListsMissing": true,
+  "avdmanager.executable": "c:\\Android\\Sdk\\emulator\\emulator.exe"
 }

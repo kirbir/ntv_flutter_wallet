@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
 
   final SettingsController settingsController;
 
+  // #region Router
   late final GoRouter _router = GoRouter(routes: <GoRoute>[
     GoRoute(
         path: '/',
@@ -81,6 +82,7 @@ class MyApp extends StatelessWidget {
           return const HomeScreen();
         }),
   ]);
+// #endregion
 
   @override
   Widget build(BuildContext context) {

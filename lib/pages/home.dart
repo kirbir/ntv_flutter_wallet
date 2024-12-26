@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
@@ -9,6 +9,10 @@ import 'package:solana/dto.dart';
 import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
 import 'package:ntv_flutter_wallet/widgets/price_ticker.dart';
+import 'package:ntv_flutter_wallet/models/my_tokens.dart';
+import 'package:ntv_flutter_wallet/services/metadata_service.dart';
+import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,14 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isHealthy = false;
   int _selectedIndex = 0;
   num? solBalance;
-  num solDollarPrice = 0;
-  Map<String, double> _tokenBalances = {};
+  double solDollarPrice = 0;
   Map<String, double> _coinPrices = {};
+  List<Token> _myTokens = [];
 
   Color get rpcColor => _isHealthy ? Colors.greenAccent : Colors.redAccent;
 
-  Network currentNetwork = Network.devnet;
-  final String syndicaApiKey = dotenv.env['SYNDICA_API_KEY'] ?? '';
+  String currentNetwork = RpcNetwork.devnet;
 
   @override
   void initState() {
@@ -53,63 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(8.0), child: Container()),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const Image(
-              image: AssetImage('assets/images/Solana_logo.png'),
-              width: 50,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.white, // Border color
-                  width: 1, // Border width
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Icon(Icons.lan_outlined, size: 25, color: rpcColor),
-                  DropdownButton<Network>(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                    underline: Container(),
-                    icon: Icon(Icons.arrow_drop_down_outlined),
-                    iconSize: 24,
-                    iconEnabledColor: Colors.white,
-                    value: currentNetwork,
-                    items: Network.values
-                        .map((network) => DropdownMenuItem(
-                              value: network,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 4, right: 4),
-                                child: Text(network.label),
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (newNetwork) {
-                      if (newNetwork != null) {
-                        setState(() {
-                          currentNetwork = newNetwork;
-                        });
-                        _initializeClient(
-                            currentNetwork); // Reinitialize client with new network
-                        _checkConnection(); // Check connection when network changes
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+        title: RPCSelector(
+          currentNetwork: currentNetwork,
+          isHealthy: _isHealthy,
+          onNetworkChanged: (newNetwork) {
+            setState(() {
+              currentNetwork = newNetwork;
+            });
+            _initializeClient(newNetwork);
+          },
         ),
       ),
       body: Padding(
@@ -119,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  Card(
+                  Card.outlined(
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Column(
@@ -131,13 +86,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '\$ ${solBalance?.truncateToDouble() ?? 0.0}',
-                                style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28),
-                              ),
+                              _coinPrices.isEmpty
+                                  ? Shimmer.fromColors(
+                                      baseColor: Colors.grey[800]!,
+                                      highlightColor: Colors.grey[600]!,
+                                      child: Container(
+                                        width: 120,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      '\$ ${totalBalanceInUsd.toStringAsFixed(2)}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
                               IconButton(
                                 icon: const Icon(Icons.refresh),
                                 onPressed: () {
@@ -146,11 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             ],
                           ),
-                          Row(
-                            children: [
-                              Text('SOL: $_balance ' ?? 'Loading...'),
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -192,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icon(Icons.send_outlined),
                           ),
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 20),
                         Expanded(
                           child: IconButton.outlined(
                             icon: const Icon(Icons.copy),
@@ -204,6 +167,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         )
+                      ],
+                    ),
+                  ),
+                  Card(
+                    child: Column(
+                      children: [
+                        const Text('My Tokens',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        ..._myTokens.map((token) => ListTile(
+                              leading: token.logoUri != null
+                                  ? Image.network(
+                                      token.logoUri!,
+                                      width: 24,
+                                      height: 24,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.token),
+                                    )
+                                  : const Icon(Icons.token),
+                              title: Text(token.symbol),
+                              subtitle: Text(token.name ?? ''),
+                              trailing: Text(
+                                token.amount.toStringAsFixed(
+                                    token.decimals?.clamp(0, 6) ?? 6),
+                              ),
+                            )),
                       ],
                     ),
                   ),
@@ -252,14 +242,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _initializeClient(Network network) async {
+  Future<void> _initializeClient(String network) async {
     try {
-      print('Initializing client for ${currentNetwork.label}');
+      print('Initializing client for $network');
+
+      // Get URLs from RpcNetwork configuration
+      final rpcUrl = RpcNetwork.getRpcUrl(network);
+      final wsUrl = RpcNetwork.getWsUrl(network);
+
+      if (rpcUrl == null || wsUrl == null) {
+        throw Exception('Invalid network configuration');
+      }
+
       client = SolanaClient(
-        rpcUrl: Uri.parse(currentNetwork.url),
-        websocketUrl:
-            Uri.parse('wss://${currentNetwork.url.substring(8)}'), // Dont need
+        rpcUrl: Uri.parse(rpcUrl),
+        websocketUrl: Uri.parse(wsUrl),
       );
+
       _getBalance();
     } on JsonRpcException catch (e, s) {
       print(
@@ -280,6 +279,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final getBalance = await client?.rpcClient
           .getBalance(_publicKey!, commitment: Commitment.confirmed);
 
+      print('Fetching token accounts for address: $_publicKey');
+
       // Get token accounts
       final filter = TokenAccountsFilter.byProgramId(
         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -292,52 +293,98 @@ class _HomeScreenState extends State<HomeScreen> {
         commitment: Commitment.confirmed,
       );
 
+      print(
+          'Token accounts response: ${tokenAccounts?.value.length} accounts found');
+
       // Process token accounts
+      final tokens = <Token>[];
+
       if (tokenAccounts != null) {
+        // Add SOL tokens if any SOL is found to the list
+        tokens.add(Token(
+            mint: '11111111111111111111111111111111',
+            symbol: 'SOL',
+            name: 'Solana',
+            decimals: 4,
+            logoUri: null,
+            amount: getBalance!.value.toDouble() / lamportsPerSol));
+
         for (final account in tokenAccounts.value) {
-          if (account.account.data is ParsedAccountData) {
-            final parsedData = account.account.data as ParsedAccountData;
+          try {
+            if (account.account.data is ParsedAccountData) {
+              final parsedData = account.account.data as ParsedAccountData;
+              print('Parsing account data: ${parsedData.parsed}');
 
-            // Debug print the entire structure
-            print('Full parsed data structure: ${parsedData.toJson()}');
-            print('Parsed type: ${parsedData.runtimeType}');
+              // Handle TokenAccountData
+              if (parsedData.parsed is TokenAccountData) {
+                final tokenData = parsedData.parsed as TokenAccountData;
+                final info = tokenData.info;
 
-            // Try accessing the parsed data directly
-            final parsed = parsedData.parsed;
-            if (parsed != null) {
-              print('Parsed content: $parsed');
+                print('Token info: $info');
 
-              // Try to access as Map
-              if (parsed is Map<String, dynamic>) {
-                final info = parsed['info'] as Map<String, dynamic>?;
                 if (info != null) {
-                  final mint = info['mint'] as String?;
-                  final tokenAmount =
-                      info['tokenAmount'] as Map<String, dynamic>?;
+                  final mint = info.mint;
+                  final tokenAmount = info.tokenAmount;
 
                   if (mint != null && tokenAmount != null) {
-                    final amount = tokenAmount['uiAmount'] as double?;
-                    print('Found token: $mint with amount: $amount');
+                    // Convert uiAmountString to double with null safety
+                    final amountString = tokenAmount.uiAmountString;
+                    if (amountString != null) {
+                      final amount = double.tryParse(amountString) ?? 0.0;
 
-                    if (amount != null) {
-                      _tokenBalances[mint] = amount;
+                      print('Found token mint: $mint');
+                      print('Token amount: $amount');
+
+                      if (amount > 0) {
+                        // Fetch metadata for this token
+                        print('Fetching metadata for mint: $mint');
+                        final metadata =
+                            await TokenMetadataService.getTokenMetadata(mint);
+                        print('Received metadata: $metadata');
+
+                        tokens.add(Token(
+                          mint: mint,
+                          symbol: metadata['symbol'] ?? 'Unknown',
+                          name: metadata['name'],
+                          decimals: metadata['decimals'],
+                          logoUri: metadata['logoURI'],
+                          amount: amount,
+                        ));
+
+                        print(
+                            'Added token: ${metadata['symbol']} ($mint) with amount: $amount');
+                      }
                     }
                   }
                 }
+              } else {
+                print(
+                    'Unexpected parsed data type: ${parsedData.parsed.runtimeType}');
               }
             }
+          } catch (e, stack) {
+            print('Error processing token account: $e');
+            print('Stack trace: $stack');
           }
         }
+      } else {
+        print('No token accounts returned from RPC');
       }
 
-      // Update SOL balance
-      final balance = (getBalance!.value) / lamportsPerSol;
-      setState(() {
-        _balance = balance.toString();
-        solBalance = balance * (solDollarPrice ?? 0);
+      print('Final token list: ${tokens.length} tokens found');
+      tokens.forEach((token) {
+        print('- ${token.symbol} (${token.mint}): ${token.amount}');
       });
-    } on HttpException catch (e, s) {
-      print('Error getting balance: ${e}stacktrace: $s');
+
+      // Update UI with token balances
+      setState(() {
+        _myTokens = tokens;
+        _balance = (getBalance!.value / lamportsPerSol).toString();
+        solBalance = double.parse(_balance!) * (solDollarPrice ?? 0);
+      });
+    } catch (e, stackTrace) {
+      print('Error getting balance: $e');
+      print('Stack trace: $stackTrace');
       setState(() {
         _isHealthy = false;
       });
@@ -346,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _checkConnection() async {
     try {
-      print('Checking connection for ${currentNetwork.label}');
+      print('Checking connection for ${currentNetwork}');
       final response = await client?.rpcClient.getHealth();
       if (response == 'ok') {
         setState(() {
@@ -382,9 +429,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _coinPrices = prices; // Update the state with new prices
       });
 
-      prices.forEach((coin, price) {
-        print('$coin: \$$price');
-      });
+      // prices.forEach((coin, price) {
+      //   print('$coin: \$$price');
+      // });
     } catch (e) {
       print('Error loading prices: $e');
     }
@@ -416,32 +463,45 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
   }
-}
 
-enum Network {
-  mainnet,
-  devnet,
-  testnet;
+  double get totalBalanceInUsd {
+    double total = (solBalance ?? 0) * solDollarPrice;
 
-  String get url {
-    switch (this) {
-      case Network.mainnet:
-        return 'https://solana-mainnet.api.syndica.io/api-key/3ZB8nwaToy52SC7swNrgP2hNMQY7JUvwRDaaoEum2AHJiaL3xPoKUXXLRfCJspgyoXFr6WphXyLhHcJqhiFVXRLKd2XbjRRP3ro';
-      case Network.devnet:
-        return 'https://api.devnet.solana.com';
-      case Network.testnet:
-        return 'https://api.testnet.solana.com';
+    // Add value of other tokens
+    for (var token in _myTokens) {
+      // Get token price from _coinPrices if available
+      final tokenPrice = _coinPrices[token.symbol.toLowerCase()] ?? 0.0;
+      total += token.amount * tokenPrice;
     }
-  }
 
-  String get label {
-    switch (this) {
-      case Network.mainnet:
-        return 'Mainnet';
-      case Network.devnet:
-        return 'Devnet';
-      case Network.testnet:
-        return 'Testnet';
-    }
+    return total;
   }
 }
+
+// enum Network {
+//   mainnet,
+//   devnet,
+//   testnet;
+
+//   String get url {
+//     switch (this) {
+//       case Network.mainnet:
+//         return 'https://solana-mainnet.api.syndica.io/api-key/3ZB8nwaToy52SC7swNrgP2hNMQY7JUvwRDaaoEum2AHJiaL3xPoKUXXLRfCJspgyoXFr6WphXyLhHcJqhiFVXRLKd2XbjRRP3ro';
+//       case Network.devnet:
+//         return 'https://api.devnet.solana.com';
+//       case Network.testnet:
+//         return 'https://api.testnet.solana.com';
+//     }
+//   }
+
+//   String get label {
+//     switch (this) {
+//       case Network.mainnet:
+//         return 'Mainnet';
+//       case Network.devnet:
+//         return 'Devnet';
+//       case Network.testnet:
+//         return 'Testnet';
+//     }
+//   }
+// }

@@ -20,6 +20,7 @@ dependencies:
   bip39: ^1.0.6
   shared_preferences: ^2.3.3
   marquee: ^2.3.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
