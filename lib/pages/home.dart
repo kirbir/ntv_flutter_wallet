@@ -106,12 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .textTheme
                                           .headlineMedium,
                                     ),
-                              IconButton(
-                                icon: const Icon(Icons.refresh),
-                                onPressed: () {
-                                  _getBalance();
-                                },
-                              )
                             ],
                           ),
                         ],
@@ -152,10 +146,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     _getBalance(), // Pass the callback to refresh balance
                               );
                             },
-                            icon: Icon(Icons.send_outlined),
+                            icon: const Icon(Icons.send_outlined),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: IconButton.outlined(
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () {
+                              _getBalance();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: IconButton.outlined(
                             icon: const Icon(Icons.copy),
@@ -170,33 +173,78 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  Card(
+
+                  // #Region My Tokens Card
+                  const Center(
                     child: Column(
                       children: [
-                        const Text('My Tokens',
+                        Text('My Tokens',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        ..._myTokens.map((token) => ListTile(
-                              leading: token.logoUri != null
-                                  ? Image.network(
-                                      token.logoUri!,
-                                      width: 24,
-                                      height: 24,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(Icons.token),
-                                    )
-                                  : const Icon(Icons.token),
-                              title: Text(token.symbol),
-                              subtitle: Text(token.name ?? ''),
-                              trailing: Text(
-                                token.amount.toStringAsFixed(
-                                    token.decimals?.clamp(0, 6) ?? 6),
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
+                                SizedBox(height: 8,),
+                      ],
+                    ),
+                                                
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color.fromARGB(255, 12, 36, 13),
+                          Color.fromARGB(255, 41, 42, 30),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        ..._myTokens.map((token) => Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(44, 202, 203, 255),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: token.logoUri != null
+                                    ? Image.network(
+                                        token.logoUri!,
+                                        width: 24,
+                                        height: 24,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(Icons.token,
+                                                    color: Colors.white),
+                                      )
+                                    : const Icon(Icons.token,
+                                        color: Colors.white),
+                                title: Text(token.symbol,
+                                    style:
+                                        const TextStyle(color: Colors.white)),
+                                subtitle: Text(token.name ?? '',
+                                    style:
+                                        const TextStyle(color: Colors.white)),
+                                trailing: Text(
+                                  token.amount.toStringAsFixed(
+                                      token.decimals?.clamp(0, 6) ?? 6),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             )),
                       ],
                     ),
                   ),
+                  // #endregion
                 ],
               ),
             ),
@@ -306,7 +354,8 @@ class _HomeScreenState extends State<HomeScreen> {
             symbol: 'SOL',
             name: 'Solana',
             decimals: 4,
-            logoUri: null,
+            logoUri:
+                'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
             amount: getBalance!.value.toDouble() / lamportsPerSol));
 
         for (final account in tokenAccounts.value) {

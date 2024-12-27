@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? password;
   bool _loading = true;
   String? key;
+  String? username = 'WalletUser';
 
   @override
   void initState() {
@@ -51,11 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
               'assets/images/Viking.png',
               width: 200,
             ),
+
           ),
           Container(
             alignment: Alignment.center,
-            child: const Text(
-              'Login',
+            child:  Text('Welcome ' + username!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 32,
@@ -75,7 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: passwordController,
                     obscureText: true,
                     textAlign: TextAlign.center,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 180),
                       labelText: 'Password',
                       alignLabelWithHint: true,
                       floatingLabelAlignment: FloatingLabelAlignment.center,
@@ -146,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     key = prefs.getString('mnemonic');
     password = prefs.getString('password');
+    username = prefs.getString('username');
     if (key == null || password == null) {
       return false;
     } else {

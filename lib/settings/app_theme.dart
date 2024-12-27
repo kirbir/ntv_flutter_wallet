@@ -23,8 +23,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          shadowColor: AppColors.gray800,
-          clipBehavior: Clip.antiAlias,
+          shadowColor: const Color.fromARGB(255, 0, 130, 89),
+
         ),
         primarySwatch: Colors.grey,
         appBarTheme: AppBarTheme(
