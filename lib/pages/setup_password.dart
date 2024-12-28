@@ -20,28 +20,26 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-          title: 'Create a new password', showSettings: true),
-      body: 
-      Padding(
-        padding: const EdgeInsets.all(16),
+      appBar: const CustomAppBar(title: 'Account Setup', showSettings: true),
+      body: Padding(
+        padding: const EdgeInsets.all(56),
         child: Form(
           key: formKey,
           child: Column(
-
             children: [
-              const Text('Name for your account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Choose a name for your account',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               SizedBox(height: 20),
               TextFormField(
+                textAlign: TextAlign.center,
                 controller: usernameController,
+                autofocus: true,
                 decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 150),
-                  labelText: 'Username',
                   hintText: 'Username',
-                  alignLabelWithHint: true,
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                   border: OutlineInputBorder(),
-                  
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -50,20 +48,19 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                   return null;
                 },
               ),
-              Divider(height: 54,color: Colors.grey,),
-              const Text('Create a password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            SizedBox(height: 20),
+              SizedBox(height: 80),
+              Text(
+                'Create a password: ',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SizedBox(height: 20),
               TextFormField(
                   controller: passwordController,
                   obscureText: true,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 150),
-                    labelText: 'Type a new Password',
-                    hintText: 'Create new Password',
-                    alignLabelWithHint: true,
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    border: OutlineInputBorder(),
+                         hintText: 'Password',
+                  floatingLabelAlignment: FloatingLabelAlignment.center,
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -77,10 +74,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                   obscureText: true,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 150),
-                    labelText: 'Confirm Password',
-                    hintText: 'Confirm Password',
-                    alignLabelWithHint: true,
+                    hintText: 'Confirm password',
                     floatingLabelAlignment: FloatingLabelAlignment.center,
                     border: const OutlineInputBorder(),
                   ),

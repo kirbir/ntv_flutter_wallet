@@ -31,9 +31,31 @@ class AppTheme {
           backgroundColor: AppColors.surfaceDark,
           foregroundColor: AppColors.textPrimary,
         ),
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: AppColors.gray500),
-          labelStyle: TextStyle(color: AppColors.textPrimary),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColors.cardDark,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.gray700),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.gray700),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.warning, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.error),
+          ),
+          labelStyle: const TextStyle(color: AppColors.textPrimary),
+          hintStyle: TextStyle(color: AppColors.textSecondary),
+          floatingLabelStyle: const TextStyle(color: AppColors.warning),
+          alignLabelWithHint: true,
+          floatingLabelAlignment: FloatingLabelAlignment.center,
         ),
         brightness: Brightness.dark,
         canvasColor: AppColors.surfaceDark,
@@ -43,6 +65,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: Colors.white),
         scaffoldBackgroundColor: AppColors.backgroundDark,
         textTheme: TextTheme(
+          titleLarge: TextStyle(color: AppColors.textPrimary),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
         ),
@@ -70,9 +93,31 @@ class AppTheme {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.grey,
         ),
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: Colors.grey),
-          labelStyle: TextStyle(color: Colors.white),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.gray300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.gray300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.error),
+          ),
+          labelStyle: const TextStyle(color: AppColors.gray800),
+          hintStyle: const TextStyle(color: AppColors.gray600),
+          floatingLabelStyle: TextStyle(color: AppColors.primaryBlue),
+          alignLabelWithHint: true,
+          floatingLabelAlignment: FloatingLabelAlignment.center,
         ),
         canvasColor: Colors.white,
         brightness: Brightness.light,

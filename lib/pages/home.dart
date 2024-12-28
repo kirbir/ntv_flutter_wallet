@@ -527,30 +527,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// enum Network {
-//   mainnet,
-//   devnet,
-//   testnet;
-
-//   String get url {
-//     switch (this) {
-//       case Network.mainnet:
-//         return 'https://solana-mainnet.api.syndica.io/api-key/3ZB8nwaToy52SC7swNrgP2hNMQY7JUvwRDaaoEum2AHJiaL3xPoKUXXLRfCJspgyoXFr6WphXyLhHcJqhiFVXRLKd2XbjRRP3ro';
-//       case Network.devnet:
-//         return 'https://api.devnet.solana.com';
-//       case Network.testnet:
-//         return 'https://api.testnet.solana.com';
-//     }
-//   }
-
-//   String get label {
-//     switch (this) {
-//       case Network.mainnet:
-//         return 'Mainnet';
-//       case Network.devnet:
-//         return 'Devnet';
-//       case Network.testnet:
-//         return 'Testnet';
-//     }
-//   }
-// }
