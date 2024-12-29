@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
-
+import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -42,107 +42,113 @@ class _LoginScreenState extends State<LoginScreen> {
         child: CircularProgressIndicator(),
       );
     }
-    return Scaffold(
-      appBar: const CustomAppBar(title: 'Login', showSettings: true),
-      body: Padding(
-                padding: const EdgeInsets.all(56),
-
-        child: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 40),
-            Center(
-              child: Image.asset(
-                'assets/images/Viking.png',
-                width: 200,
-              ),
-        
-            ),
-            Container(
-              alignment: Alignment.center,
-              child:  Text('Welcome ' + username!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter you password',
-                        floatingLabelAlignment: FloatingLabelAlignment.center,
-                        border:  OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value != password) {
-                          setState(() {
-                            validationFailed = true;
-                          });
-                          return 'Invalid Password';
-                        }
-                        setState(() {
-                          validationFailed = false;
-                        });
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Text(validationFailed ? 'Invalid Password' : '',
-                        style: const TextStyle(color: Colors.red)),
-                    const SizedBox(height: 8),
-                    Container(
-                      height: 120,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                ),
-                                onPressed: _onSubmit,
-                                child: const Text('Login'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                ),
-                                onPressed: () => _onDifferentAccountPressed(context),
-                                child: const Text('Use different Account'),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ]),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient:  Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
+        child: Scaffold(
+          appBar: const CustomAppBar(title: 'Login', showSettings: true),
+          body: Padding(
+                    padding: const EdgeInsets.all(56),
+        
+            child: SingleChildScrollView(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const SizedBox(height: 40),
+                Center(
+                  child: Image.asset(
+                    'assets/images/Viking.png',
+                    width: 200,
+                  ),
+            
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child:  Text('Welcome ' + username!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter you password',
+                            floatingLabelAlignment: FloatingLabelAlignment.center,
+                            border:  OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value != password) {
+                              setState(() {
+                                validationFailed = true;
+                              });
+                              return 'Invalid Password';
+                            }
+                            setState(() {
+                              validationFailed = false;
+                            });
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        Text(validationFailed ? 'Invalid Password' : '',
+                            style: const TextStyle(color: Colors.red)),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 120,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                    ),
+                                    onPressed: _onSubmit,
+                                    child: const Text('Login'),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                    ),
+                                    onPressed: () => _onDifferentAccountPressed(context),
+                                    child: const Text('Use different Account'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      
     );
   }
 

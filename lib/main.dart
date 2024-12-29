@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
     GoRoute(
         path: '/setup',
         builder: (context, state) {
-          return const SetUpScreen();
+          return const SetupScreen();
         }),
     GoRoute(
         path: '/inputPhrase',

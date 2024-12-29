@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'settings_controller.dart';
 
 /// Displays the various settings that can be customized by the user.
@@ -15,35 +15,40 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        // Glue the SettingsController to the theme selection DropdownButton.
-        //
-        // When a user selects a theme from the dropdown list, the
-        // SettingsController is updated, which rebuilds the MaterialApp.
-        child: DropdownButton<ThemeMode>(
-          // Read the selected themeMode from the controller
-          value: controller.themeMode,
-          // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
-          items: const [
-            DropdownMenuItem(
-              value: ThemeMode.system,
-              child: Text('System Theme'),
-            ),
-            DropdownMenuItem(
-              value: ThemeMode.light,
-              child: Text('Light Theme'),
-            ),
-            DropdownMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Dark Theme'),
-            )
-          ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Settings'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          // Glue the SettingsController to the theme selection DropdownButton.
+          //
+          // When a user selects a theme from the dropdown list, the
+          // SettingsController is updated, which rebuilds the MaterialApp.
+          child: DropdownButton<ThemeMode>(
+            // Read the selected themeMode from the controller
+            value: controller.themeMode,
+            // Call the updateThemeMode method any time the user selects a theme.
+            onChanged: controller.updateThemeMode,
+            items: const [
+              DropdownMenuItem(
+                value: ThemeMode.system,
+                child: Text('System Theme'),
+              ),
+              DropdownMenuItem(
+                value: ThemeMode.light,
+                child: Text('Light Theme'),
+              ),
+              DropdownMenuItem(
+                value: ThemeMode.dark,
+                child: Text('Dark Theme'),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'custom_theme_extension.dart';
 
 class AppTheme {
   static ThemeData get darkTheme => ThemeData(
@@ -17,17 +18,17 @@ class AppTheme {
         ),
         // C A R D S
         cardTheme: CardTheme(
-          surfaceTintColor: Colors.transparent,
-          color: Colors.transparent,
-          elevation: 4,
+
+          color: Colors.blueGrey[900],
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          shadowColor: const Color.fromARGB(255, 0, 130, 89),
+
 
         ),
         primarySwatch: Colors.grey,
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.surfaceDark,
           foregroundColor: AppColors.textPrimary,
         ),
@@ -52,7 +53,7 @@ class AppTheme {
             borderSide: const BorderSide(color: AppColors.error),
           ),
           labelStyle: const TextStyle(color: AppColors.textPrimary),
-          hintStyle: TextStyle(color: AppColors.textSecondary),
+          hintStyle: const TextStyle(color: AppColors.textSecondary),
           floatingLabelStyle: const TextStyle(color: AppColors.warning),
           alignLabelWithHint: true,
           floatingLabelAlignment: FloatingLabelAlignment.center,
@@ -63,13 +64,13 @@ class AppTheme {
           secondary: Color.fromARGB(255, 122, 101, 28),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        scaffoldBackgroundColor: AppColors.backgroundDark,
-        textTheme: TextTheme(
+        scaffoldBackgroundColor: Colors.transparent,
+        textTheme: const TextTheme(
           titleLarge: TextStyle(color: AppColors.textPrimary),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.surfaceDark,
           selectedItemColor: AppColors.warning,
           unselectedItemColor: AppColors.gray500,
@@ -86,6 +87,11 @@ class AppTheme {
           type: BottomNavigationBarType.fixed,
           elevation: 8,
         ),
+        extensions: [
+          CustomThemeExtension(
+            pageGradient: AppColors.pageGradient,
+          ),
+        ],
       );
 
   static ThemeData get lightTheme => ThemeData(
@@ -107,7 +113,7 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+            borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -115,7 +121,7 @@ class AppTheme {
           ),
           labelStyle: const TextStyle(color: AppColors.gray800),
           hintStyle: const TextStyle(color: AppColors.gray600),
-          floatingLabelStyle: TextStyle(color: AppColors.primaryBlue),
+          floatingLabelStyle: const TextStyle(color: AppColors.primaryBlue),
           alignLabelWithHint: true,
           floatingLabelAlignment: FloatingLabelAlignment.center,
         ),
@@ -125,7 +131,7 @@ class AppTheme {
           secondary: Colors.grey,
         ),
         iconTheme: const IconThemeData(color: Colors.black),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primaryBlue,
           unselectedItemColor: AppColors.gray600,

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
-import 'package:solana/dto.dart';
 import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
 import 'package:ntv_flutter_wallet/widgets/price_ticker.dart';
 import 'package:ntv_flutter_wallet/models/my_tokens.dart';
-import 'package:ntv_flutter_wallet/services/metadata_service.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/services/wallet_service.dart';
+import 'package:intl/intl.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,10 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
   double solDollarPrice = 0;
   Map<String, double> _coinPrices = {};
   List<Token> _myTokens = [];
+  late WalletService _walletService;
 
   Color get rpcColor => _isHealthy ? Colors.greenAccent : Colors.redAccent;
 
   String currentNetwork = RpcNetwork.devnet;
+
+  final _currencyFormatter = NumberFormat.currency(
+    symbol: '\$',
+    locale: 'en_US',
+    decimalDigits: 2,
+  );
 
   @override
   void initState() {
@@ -43,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> startup() async {
-    await Future(() => _readPk());
+    await Future(() => _loadWalletAddress());
     await Future(() => _initializeClient(currentNetwork));
     await Future(() => _checkConnection());
     await Future(() => _loadPrices());
@@ -51,157 +59,211 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(8.0), child: Container()),
-        title: RPCSelector(
-          currentNetwork: currentNetwork,
-          isHealthy: _isHealthy,
-          onNetworkChanged: (newNetwork) {
-            setState(() {
-              currentNetwork = newNetwork;
-            });
-            _initializeClient(newNetwork);
-          },
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient:
+            Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(8.0), child: Container()),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
-                  Card.outlined(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
+                   CircleAvatar(
+                    radius: 16,  // Size of the avatar
+                    backgroundColor: Colors.grey[800],  // Dark background
+                    child: const Icon(
+                      Icons.person,  // Default person icon
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  const SizedBox(height: 8),
+                  Text(_publicKey!.substring(0, 4) +
+                          '...' +
+                          _publicKey!.substring(_publicKey!.length - 4) ??
+                      'Loading...'),
+                  IconButton(
+                      onPressed: () {
+                        if (_publicKey != null) {
+                          Clipboard.setData(ClipboardData(text: _publicKey!));
+                        }
+                      },
+                      icon: const Icon(Icons.copy_all),
+                      iconSize: 16,
+                      color: Colors.grey,
+                      ),
+                ],
+              ),
+              RpcSelector(
+                currentNetwork: currentNetwork,
+                isHealthy: _isHealthy,
+                onNetworkChanged: (newNetwork) {
+                  setState(() {
+                    currentNetwork = newNetwork;
+                  });
+                  _initializeClient(newNetwork);
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(26),
+          child: Column(
+            children: [
+              Card.outlined(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    children: [
+                      const Text('Balance',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Balance',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _coinPrices.isEmpty
-                                  ? Shimmer.fromColors(
-                                      baseColor: Colors.grey[800]!,
-                                      highlightColor: Colors.grey[600]!,
-                                      child: Container(
-                                        width: 120,
-                                        height: 30,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                      ),
-                                    )
-                                  : Text(
-                                      '\$ ${totalBalanceInUsd.toStringAsFixed(2)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
+                          // If no prices are loaded, show a shimmer loading effect
+                          _coinPrices.isEmpty
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: Colors.grey[600]!,
+                                  child: Container(
+                                    width: 120,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
+                                  ),
+                                )
+                              : Text(
+                                  _currencyFormatter.format(totalBalanceInUsd),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
+                                ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                  
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.send_outlined),
+                                onPressed: () async {
+                                  await showSendDialog(
+                                    context,
+                                    client,
+                                    () => _getBalance(),
+                                  );
+                                },
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                  ? AppColors.success 
+                                  : AppColors.primaryBlue,
+                                iconSize: 28,
+                              ),
+                              const Text('Send', 
+                                style: TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.refresh),
+                                onPressed: _getBalance,
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                  ? AppColors.success 
+                                  : AppColors.primaryBlue,
+                                iconSize: 28,
+                              ),
+                              const Text('Refresh', 
+                                style: TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                          if (currentNetwork == 'devnet')
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.downloading),
+                                  onPressed: () async {
+                                    final signature = await _walletService.requestAirdrop(
+                                      _publicKey!, 
+                                      lamportsPerSol
+                                    );
+                                    print('Airdrop requested: $signature');
+                                    _getBalance();
+                                  },
+                                  color: Theme.of(context).brightness == Brightness.dark 
+                                    ? AppColors.success 
+                                    : AppColors.primaryBlue,
+                                  iconSize: 28,
+                                ),
+                                const Text('Airdrop', 
+                                  style: TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.copy),
+                                onPressed: () {
+                                  if (_publicKey != null) {
+                                    Clipboard.setData(ClipboardData(text: _publicKey!));
+                                  }
+                                },
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                  ? AppColors.success 
+                                  : AppColors.primaryBlue,
+                                iconSize: 28,
+                              ),
+                              const Text('Copy', 
+                                style: TextStyle(fontSize: 12)),
                             ],
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  Card.outlined(
-                    child: Column(
-                      children: [
-                        const Text('Wallet Address',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                                width: 320,
-                                child: Text(_publicKey ?? 'Loading...')),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: IconButton.outlined(
-                            tooltip: 'Send crypto to another address',
-                            onPressed: () async {
-                              // Send tab
-                              await showSendDialog(
-                                context,
-                                client,
-                                () =>
-                                    _getBalance(), // Pass the callback to refresh balance
-                              );
-                            },
-                            icon: const Icon(Icons.send_outlined),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: IconButton.outlined(
-                            icon: const Icon(Icons.refresh),
-                            onPressed: () {
-                              _getBalance();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: IconButton.outlined(
-                            icon: const Icon(Icons.copy),
-                            onPressed: () {
-                              if (_publicKey != null) {
-                                Clipboard.setData(
-                                    ClipboardData(text: _publicKey!));
-                              }
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
 
-                  // #Region My Tokens Card
-                  const Center(
-                    child: Column(
-                      children: [
-                        Text('My Tokens',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold)),
-                                SizedBox(height: 8,),
-                      ],
-                    ),
-                                                
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color.fromARGB(255, 12, 36, 13),
-                          Color.fromARGB(255, 41, 42, 30),
+                    // #Region My Tokens Card
+                    const Center(
+                      child: Column(
+                        children: [
+                          Text('My Tokens',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 8,
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
+                    Column(
                       children: [
                         ..._myTokens.map((token) => Container(
                               margin: const EdgeInsets.symmetric(
@@ -243,42 +305,42 @@ class _HomeScreenState extends State<HomeScreen> {
                             )),
                       ],
                     ),
-                  ),
-                  // #endregion
-                ],
+                    // #endregion
+                  ],
+                ),
               ),
-            ),
-            PriceTicker(prices: _coinPrices),
-            const SizedBox(height: 8),
-          ],
+              PriceTicker(prices: _coinPrices),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_applications),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'Send',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Logout',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_applications),
+              label: 'Settings',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: 'Send',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.logout),
+              label: 'Logout',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
 
-  Future<void> _readPk() async {
+  Future<void> _loadWalletAddress() async {
     final prefs = await SharedPreferences.getInstance();
     final mnemonic = prefs.getString('mnemonic');
     if (mnemonic != null) {
@@ -307,136 +369,28 @@ class _HomeScreenState extends State<HomeScreen> {
         websocketUrl: Uri.parse(wsUrl),
       );
 
+      _walletService = WalletService(client: client!);
       _getBalance();
-    } on JsonRpcException catch (e, s) {
-      print(
-          'Error initializing client: ${e.message} code: ${e.code} stacktrace: $s');
-      setState(() {
-        _isHealthy = false;
-      });
+    } catch (e) {
+      print('Error initializing client: $e');
+      setState(() => _isHealthy = false);
     }
   }
 
   void _getBalance() async {
     try {
+      setState(() => _balance = null);
+
+      final result = await _walletService.getBalanceAndTokens(_publicKey!);
+
       setState(() {
-        _balance = null;
+        _myTokens = result.tokens;
+        _balance = result.solBalance.toString();
+        solBalance = result.solBalance * (solDollarPrice ?? 0);
       });
-
-      // Get SOL balance
-      final getBalance = await client?.rpcClient
-          .getBalance(_publicKey!, commitment: Commitment.confirmed);
-
-      print('Fetching token accounts for address: $_publicKey');
-
-      // Get token accounts
-      final filter = TokenAccountsFilter.byProgramId(
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-      );
-
-      final tokenAccounts = await client?.rpcClient.getTokenAccountsByOwner(
-        _publicKey!,
-        filter,
-        encoding: Encoding.jsonParsed,
-        commitment: Commitment.confirmed,
-      );
-
-      print(
-          'Token accounts response: ${tokenAccounts?.value.length} accounts found');
-
-      // Process token accounts
-      final tokens = <Token>[];
-
-      if (tokenAccounts != null) {
-        // Add SOL tokens if any SOL is found to the list
-        tokens.add(Token(
-            mint: '11111111111111111111111111111111',
-            symbol: 'SOL',
-            name: 'Solana',
-            decimals: 4,
-            logoUri:
-                'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
-            amount: getBalance!.value.toDouble() / lamportsPerSol));
-
-        for (final account in tokenAccounts.value) {
-          try {
-            if (account.account.data is ParsedAccountData) {
-              final parsedData = account.account.data as ParsedAccountData;
-              print('Parsing account data: ${parsedData.parsed}');
-
-              // Handle TokenAccountData
-              if (parsedData.parsed is TokenAccountData) {
-                final tokenData = parsedData.parsed as TokenAccountData;
-                final info = tokenData.info;
-
-                print('Token info: $info');
-
-                if (info != null) {
-                  final mint = info.mint;
-                  final tokenAmount = info.tokenAmount;
-
-                  if (mint != null && tokenAmount != null) {
-                    // Convert uiAmountString to double with null safety
-                    final amountString = tokenAmount.uiAmountString;
-                    if (amountString != null) {
-                      final amount = double.tryParse(amountString) ?? 0.0;
-
-                      print('Found token mint: $mint');
-                      print('Token amount: $amount');
-
-                      if (amount > 0) {
-                        // Fetch metadata for this token
-                        print('Fetching metadata for mint: $mint');
-                        final metadata =
-                            await TokenMetadataService.getTokenMetadata(mint);
-                        print('Received metadata: $metadata');
-
-                        tokens.add(Token(
-                          mint: mint,
-                          symbol: metadata['symbol'] ?? 'Unknown',
-                          name: metadata['name'],
-                          decimals: metadata['decimals'],
-                          logoUri: metadata['logoURI'],
-                          amount: amount,
-                        ));
-
-                        print(
-                            'Added token: ${metadata['symbol']} ($mint) with amount: $amount');
-                      }
-                    }
-                  }
-                }
-              } else {
-                print(
-                    'Unexpected parsed data type: ${parsedData.parsed.runtimeType}');
-              }
-            }
-          } catch (e, stack) {
-            print('Error processing token account: $e');
-            print('Stack trace: $stack');
-          }
-        }
-      } else {
-        print('No token accounts returned from RPC');
-      }
-
-      print('Final token list: ${tokens.length} tokens found');
-      tokens.forEach((token) {
-        print('- ${token.symbol} (${token.mint}): ${token.amount}');
-      });
-
-      // Update UI with token balances
-      setState(() {
-        _myTokens = tokens;
-        _balance = (getBalance!.value / lamportsPerSol).toString();
-        solBalance = double.parse(_balance!) * (solDollarPrice ?? 0);
-      });
-    } catch (e, stackTrace) {
+    } catch (e) {
       print('Error getting balance: $e');
-      print('Stack trace: $stackTrace');
-      setState(() {
-        _isHealthy = false;
-      });
+      setState(() => _isHealthy = false);
     }
   }
 
@@ -508,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () => _getBalance(), // Pass the callback to refresh balance
       );
       if (index == 3) {
-        GoRouter.of(context).push("/");
+        GoRouter.of(context).push("/setup");
       }
     }
   }
@@ -526,4 +480,3 @@ class _HomeScreenState extends State<HomeScreen> {
     return total;
   }
 }
-

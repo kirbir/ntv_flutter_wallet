@@ -33,6 +33,15 @@ class AppColors {
     ],
   );
 
+  static const pageGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color.fromARGB(255, 12, 36, 13),
+      Color.fromARGB(255, 41, 42, 30),
+    ],
+  );
+
   // Text colors
   static const textPrimary = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xB3FFFFFF);  // 70% white

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 
 class SetupPasswordScreen extends StatefulWidget {
   final String? mnemonic;
@@ -19,89 +20,94 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(title: 'Account Setup', showSettings: true),
-      body: Padding(
-        padding: const EdgeInsets.all(56),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              Text(
-                'Choose a name for your account',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                textAlign: TextAlign.center,
-                controller: usernameController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Username',
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                  border: OutlineInputBorder(),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
+      ),
+      child: Scaffold(
+        appBar: const CustomAppBar(title: 'Account Setup', showSettings: true),
+        body: Padding(
+          padding: const EdgeInsets.all(56),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                Text(
+                  'Choose a name for your account',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Username is required';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 80),
-              Text(
-                'Create a password: ',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
+                const SizedBox(height: 20),
+                TextFormField(
                   textAlign: TextAlign.center,
+                  controller: usernameController,
+                  autofocus: true,
                   decoration: const InputDecoration(
-                         hintText: 'Password',
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Password is required';
-                    }
-                    return null;
-                  }),
-              const SizedBox(height: 16),
-              TextFormField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    hintText: 'Confirm password',
+                    hintText: 'Username',
                     floatingLabelAlignment: FloatingLabelAlignment.center,
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Confirm password is required';
-                    }
-                    if (value != passwordController.text) {
-                      return 'Passwords do not match';
+                      return 'Username is required';
                     }
                     return null;
-                  }),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: _submit,
-                      child: const Text('Submit'),
+                  },
+                ),
+                const SizedBox(height: 80),
+                Text(
+                  'Create a password: ',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                    controller: passwordController,
+                    obscureText: true,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                           hintText: 'Password',
+                    floatingLabelAlignment: FloatingLabelAlignment.center,
                     ),
-                  ),
-                ],
-              )
-            ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Password is required';
+                      }
+                      return null;
+                    }),
+                const SizedBox(height: 16),
+                TextFormField(
+                    controller: confirmPasswordController,
+                    obscureText: true,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      hintText: 'Confirm password',
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Confirm password is required';
+                      }
+                      if (value != passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    }),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: _submit,
+                        child: const Text('Submit'),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

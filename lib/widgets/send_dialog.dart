@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:solana/dto.dart';
 import 'package:solana/solana.dart';
 import 'package:solana/encoder.dart' show SignedTx;
 
@@ -13,6 +14,7 @@ Future<void> showSendDialog(
     builder: (BuildContext dialogContext) {
       final addressController = TextEditingController();
       final amountController = TextEditingController();
+      
       
       return AlertDialog(
         title: const Text('Send SOL'),
