@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'settings_controller.dart';
+import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -50,6 +51,7 @@ class SettingsView extends StatelessWidget {
             ],
           ),
         ),
+         bottomNavigationBar: const BottomNavBar(selectedIndex: 3),
       ),
     );
   }

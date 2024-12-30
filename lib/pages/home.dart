@@ -14,6 +14,10 @@ import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:ntv_flutter_wallet/services/wallet_service.dart';
 import 'package:intl/intl.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/pages/send_transaction.dart';
+import 'package:ntv_flutter_wallet/pages/transactions.dart';
+import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     locale: 'en_US',
     decimalDigits: 2,
   );
+
 
   @override
   void initState() {
@@ -75,31 +80,33 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Row(
                 children: [
-                   CircleAvatar(
-                    radius: 16,  // Size of the avatar
-                    backgroundColor: Colors.grey[800],  // Dark background
+                  CircleAvatar(
+                    radius: 16, // Size of the avatar
+                    backgroundColor: Colors.grey[800], // Dark background
                     child: const Icon(
-                      Icons.person,  // Default person icon
+                      Icons.person, // Default person icon
                       size: 20,
                       color: Colors.white,
                     ),
                   ),
                   SizedBox(width: 8),
                   const SizedBox(height: 8),
-                  Text(_publicKey!.substring(0, 4) +
-                          '...' +
-                          _publicKey!.substring(_publicKey!.length - 4) ??
-                      'Loading...'),
+                  if (_publicKey != null)
+                    Text(_publicKey!.substring(0, 4) +
+                        '...' +
+                        _publicKey!.substring(_publicKey!.length - 4))
+                  else
+                    const Text('Loading...'),
                   IconButton(
-                      onPressed: () {
-                        if (_publicKey != null) {
-                          Clipboard.setData(ClipboardData(text: _publicKey!));
-                        }
-                      },
-                      icon: const Icon(Icons.copy_all),
-                      iconSize: 16,
-                      color: Colors.grey,
-                      ),
+                    onPressed: () {
+                      if (_publicKey != null) {
+                        Clipboard.setData(ClipboardData(text: _publicKey!));
+                      }
+                    },
+                    icon: const Icon(Icons.copy_all),
+                    iconSize: 16,
+                    color: Colors.grey,
+                  ),
                 ],
               ),
               RpcSelector(
@@ -115,227 +122,209 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(26),
-          child: Column(
-            children: [
-              Card.outlined(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    children: [
-                      const Text('Balance',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // If no prices are loaded, show a shimmer loading effect
-                          _coinPrices.isEmpty
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: Colors.grey[600]!,
-                                  child: Container(
-                                    width: 120,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                )
-                              : Text(
-                                  _currencyFormatter.format(totalBalanceInUsd),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium,
-                                ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView(
+        body: Column(
+ 
+          children: [
+            SizedBox(height: 24),
+            // #Region BALANCE CARD
+            Card.outlined(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 2,
                   children: [
-                  
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.send_outlined),
-                                onPressed: () async {
-                                  await showSendDialog(
-                                    context,
-                                    client,
-                                    () => _getBalance(),
-                                  );
-                                },
-                                color: Theme.of(context).brightness == Brightness.dark 
-                                  ? AppColors.success 
-                                  : AppColors.primaryBlue,
-                                iconSize: 28,
-                              ),
-                              const Text('Send', 
-                                style: TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.refresh),
-                                onPressed: _getBalance,
-                                color: Theme.of(context).brightness == Brightness.dark 
-                                  ? AppColors.success 
-                                  : AppColors.primaryBlue,
-                                iconSize: 28,
-                              ),
-                              const Text('Refresh', 
-                                style: TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                          if (currentNetwork == 'devnet')
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.downloading),
-                                  onPressed: () async {
-                                    final signature = await _walletService.requestAirdrop(
-                                      _publicKey!, 
-                                      lamportsPerSol
-                                    );
-                                    print('Airdrop requested: $signature');
-                                    _getBalance();
-                                  },
-                                  color: Theme.of(context).brightness == Brightness.dark 
-                                    ? AppColors.success 
-                                    : AppColors.primaryBlue,
-                                  iconSize: 28,
-                                ),
-                                const Text('Airdrop', 
-                                  style: TextStyle(fontSize: 12)),
-                              ],
-                            ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.copy),
-                                onPressed: () {
-                                  if (_publicKey != null) {
-                                    Clipboard.setData(ClipboardData(text: _publicKey!));
-                                  }
-                                },
-                                color: Theme.of(context).brightness == Brightness.dark 
-                                  ? AppColors.success 
-                                  : AppColors.primaryBlue,
-                                iconSize: 28,
-                              ),
-                              const Text('Copy', 
-                                style: TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // #Region My Tokens Card
-                    const Center(
-                      child: Column(
-                        children: [
-                          Text('My Tokens',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold)),
-                          SizedBox(
-                            height: 8,
-                          ),
-                        ],
-                      ),
-                    ),
+                    const Text('Balance',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ..._myTokens.map((token) => Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(44, 202, 203, 255),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                leading: token.logoUri != null
-                                    ? Image.network(
-                                        token.logoUri!,
-                                        width: 24,
-                                        height: 24,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(Icons.token,
-                                                    color: Colors.white),
-                                      )
-                                    : const Icon(Icons.token,
-                                        color: Colors.white),
-                                title: Text(token.symbol,
-                                    style:
-                                        const TextStyle(color: Colors.white)),
-                                subtitle: Text(token.name ?? '',
-                                    style:
-                                        const TextStyle(color: Colors.white)),
-                                trailing: Text(
-                                  token.amount.toStringAsFixed(
-                                      token.decimals?.clamp(0, 6) ?? 6),
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
+                        // If no prices are loaded, show a shimmer loading effect
+                        _coinPrices.isEmpty
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.transparent,
+                                highlightColor: Colors.grey[600]!,
+                                child: Container(
+                                  width: 120,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
+                              )
+                            : Text(
+                                _currencyFormatter.format(totalBalanceInUsd),
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
                               ),
-                            )),
                       ],
                     ),
-                    // #endregion
                   ],
                 ),
               ),
-              PriceTicker(prices: _coinPrices),
-              const SizedBox(height: 8),
-            ],
-          ),
+            ),
+            // #endregion
+            const SizedBox(height: 24),
+            Expanded(
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.outlined(
+                              icon: const Icon(Icons.send_outlined),
+                              onPressed: () async {
+                                await showSendDialog(
+                                  context,
+                                  client,
+                                  () => _getBalance(),
+                                );
+                              },
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.success
+                                  : AppColors.primaryBlue,
+                              iconSize: 28,
+                            ),
+                            const Text('Send', style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.outlined(
+                              icon: const Icon(Icons.refresh),
+                              onPressed: _getBalance,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.success
+                                  : AppColors.primaryBlue,
+                              iconSize: 28,
+                            ),
+                            const Text('Refresh',
+                                style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                        if (currentNetwork == 'Devnet')
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton.outlined(
+                                icon: const Icon(Icons.downloading),
+                                onPressed: () async {
+                                  final signature =
+                                      await _walletService.requestAirdrop(
+                                          _publicKey!, lamportsPerSol);
+                                  print('Airdrop requested: $signature');
+                                  _getBalance();
+                                },
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.success
+                                    : AppColors.primaryBlue,
+                                iconSize: 28,
+                              ),
+                              const Text('Airdrop',
+                                  style: TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.outlined(
+                              icon: const Icon(Icons.copy),
+                              onPressed: () {
+                                if (_publicKey != null) {
+                                  Clipboard.setData(
+                                      ClipboardData(text: _publicKey!));
+                                }
+                              },
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.success
+                                  : AppColors.primaryBlue,
+                              iconSize: 28,
+                            ),
+                            const Text('Copy', style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // #Region My Tokens Card
+                  const SizedBox(height: 24),
+                  const Center(
+                    child: Column(
+                      children: [
+                        Text('My Tokens',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      ..._myTokens.map((token) => Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(44, 202, 203, 255),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              leading: token.logoUri != null
+                                  ? Image.network(
+                                      token.logoUri!,
+                                      width: 24,
+                                      height: 24,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.token,
+                                                  color: Colors.white),
+                                    )
+                                  : const Icon(Icons.token,
+                                      color: Colors.white),
+                              title: Text(token.symbol,
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text(token.name ?? '',
+                                  style: const TextStyle(color: Colors.white)),
+                              trailing: Text(
+                                token.amount.toStringAsFixed(
+                                    token.decimals?.clamp(0, 6) ?? 6),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
+                  // #endregion
+                ],
+              ),
+            ),
+                PriceTicker(prices: _coinPrices),
+                           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_applications),
-              label: 'Settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'Send',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.logout),
-              label: 'Logout',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+        bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
     );
   }
@@ -424,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
       double solanaPrice = await TokenService.getSolanaPrice();
       print('Solana price: \$$solanaPrice');
 
-      // Get multiple coin prices
+      // Get multiple SPL Coin prices
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
 
       setState(() {
@@ -440,32 +429,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Bottom navigation bar events
-  void _onItemTapped(int index) async {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 0) {
-      GoRouter.of(context).push('/home');
-    }
-
-    if (index == 1) {
-      GoRouter.of(context).push('/settings');
-    }
-
-    if (index == 2) {
-      // Send tab
-      await showSendDialog(
-        context,
-        client,
-        () => _getBalance(), // Pass the callback to refresh balance
-      );
-      if (index == 3) {
-        GoRouter.of(context).push("/setup");
-      }
-    }
-  }
 
   double get totalBalanceInUsd {
     double total = (solBalance ?? 0) * solDollarPrice;

@@ -95,43 +95,37 @@ class AppTheme {
       );
 
   static ThemeData get lightTheme => ThemeData(
-        primarySwatch: Colors.grey,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.grey,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.gray300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.gray300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.error),
-          ),
-          labelStyle: const TextStyle(color: AppColors.gray800),
-          hintStyle: const TextStyle(color: AppColors.gray600),
-          floatingLabelStyle: const TextStyle(color: AppColors.primaryBlue),
-          alignLabelWithHint: true,
-          floatingLabelAlignment: FloatingLabelAlignment.center,
-        ),
-        canvasColor: Colors.white,
+        useMaterial3: true,
         brightness: Brightness.light,
-        colorScheme: const ColorScheme.light(
-          secondary: Colors.grey,
+        scaffoldBackgroundColor: Colors.white,
+        cardTheme: CardTheme(
+          color: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: AppColors.gray900,
+          elevation: 0,
+        ),
+        colorScheme: ColorScheme.light(
+          primary: AppColors.primaryBlue,
+          secondary: AppColors.secondaryBlue,
+          background: Colors.white,
+          surface: Colors.white,
+          onSurface: AppColors.gray900,
+        ),
+        textTheme: TextTheme(
+          titleLarge: TextStyle(color: AppColors.gray900),
+          bodyLarge: TextStyle(color: AppColors.gray900),
+          bodyMedium: TextStyle(color: AppColors.gray700),
+        ),
+        iconTheme: IconThemeData(
+          color: AppColors.primaryBlue,
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primaryBlue,
           unselectedItemColor: AppColors.gray600,
@@ -143,10 +137,6 @@ class AppTheme {
             color: AppColors.gray600,
             size: 24,
           ),
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          elevation: 8,
         ),
       );
 }

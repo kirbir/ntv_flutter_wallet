@@ -11,6 +11,8 @@ import 'package:ntv_flutter_wallet/pages/login.dart';
 import 'package:ntv_flutter_wallet/pages/setup_account.dart';
 import 'package:ntv_flutter_wallet/pages/setup_password.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ntv_flutter_wallet/pages/transactions.dart';
+import 'package:ntv_flutter_wallet/pages/send_transaction.dart';
 
 void main() async {
   // Set up the SettingsController, which will glue user settings to multiple
@@ -21,16 +23,10 @@ void main() async {
   // This prevents a sudden theme change when the app is first displayed.
   WidgetsFlutterBinding.ensureInitialized();
   await settingsController.loadSettings();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
 
-  try {
-    await dotenv.load(fileName: ".env");
-    print("ENV loaded successfully"); // Debug print
-    print("DEMO_PHRASE: ${dotenv.env['DEMO_PHRASE']}"); // Debug print
-  } catch (e) {
-    print("Failed to load .env file: $e"); // Debug print
-  }
 
+  
   runApp(
     MyApp(
       settingsController: settingsController,
@@ -53,11 +49,13 @@ class MyApp extends StatelessWidget {
     GoRoute(
         path: '/setup',
         builder: (context, state) {
-          return const SetupScreen();
+           final isLoggedIn = state.extra as bool? ?? false;
+          return  SetupScreen(isLoggedIn: isLoggedIn);
         }),
     GoRoute(
         path: '/inputPhrase',
         builder: (context, state) {
+         
           return const InputPhraseScreen();
         }),
     GoRoute(
@@ -80,6 +78,16 @@ class MyApp extends StatelessWidget {
         path: '/home',
         builder: (context, state) {
           return const HomeScreen();
+        }),
+    GoRoute(
+        path: '/transactions',
+        builder: (context, state) {
+          return const TransactionsScreen();
+        }),
+    GoRoute(
+        path: '/send',
+        builder: (context, state) {
+          return const SendScreen();
         }),
   ]);
 // #endregion
