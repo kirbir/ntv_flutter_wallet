@@ -1,0 +1,6 @@
+feat: improve logging and form layouts
+
+- Add logging service integration across pages
+- Fix input phrase screen layout and alignment
+- Standardize form layouts and button styles
+- Add proper string interpolation for public key display 
