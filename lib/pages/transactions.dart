@@ -5,6 +5,7 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
 import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
+import 'package:logging/logging.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -14,6 +15,7 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
+  final _log = Logger('Transactions');
   List<dynamic> _transactions = [];
   bool _isLoading = true;
   String? _publicKey;
@@ -41,7 +43,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
       await _loadTransactions();
     } catch (e) {
-      print('Error initializing client: $e');
+      _log.severe('Error initializing client: $e');
     }
   }
 
@@ -71,7 +73,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading transactions: $e');
+      _log.severe('Error loading transactions: $e');
       setState(() {
         _isLoading = false;
       });

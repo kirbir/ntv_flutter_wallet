@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:logging/logging.dart';
 
 class SetupPasswordScreen extends StatefulWidget {
   final String? mnemonic;
@@ -17,6 +18,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final usernameController = TextEditingController();
+  final _log = Logger('SetupPassword');
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +118,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
 
   void _submit() async {
     if (formKey.currentState!.validate()) {
-      print("validate");
+      _validate();
       if (passwordController.text != confirmPasswordController.text) {
         return;
       }
@@ -129,5 +131,10 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
       if (!mounted) return; //Check if the widget is mounted
       GoRouter.of(context).push("/");
     }
+  }
+
+  void _validate() {
+    _log.info("Validating password");
+    // rest of the validation code
   }
 }

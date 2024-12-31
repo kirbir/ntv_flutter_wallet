@@ -79,6 +79,7 @@ Code Generation
 
 - Utilize build_runner for generating code from annotations (Freezed, Riverpod, JSON serialization).
 - Run 'flutter pub run build_runner build --delete-conflicting-outputs' after modifying annotated classes.
+- Never assume i have access to methods and classes that are not defined in my project, look what libraries we are using, if we need something that is not defined in pubspec.yaml,  you should first alert me. OK? 
 
 Documentation
 

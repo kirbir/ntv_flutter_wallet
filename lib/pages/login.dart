@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:fluttermoji/fluttermoji.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -52,14 +54,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(56),
         
             child: SingleChildScrollView(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 const SizedBox(height: 40),
-                Center(
-                  child: Image.asset(
-                    'assets/images/Viking.png',
-                    width: 200,
-                  ),
+                // Center(
+                //   child: Image.asset(
+                //     'assets/images/Viking.png',
+                //     width: 200,
+                //   ),
             
+                // ),
+                FluttermojiCircleAvatar(
+                  radius: 60,
                 ),
                 Container(
                   alignment: Alignment.center,

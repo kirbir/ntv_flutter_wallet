@@ -47,4 +47,15 @@ class SettingsController with ChangeNotifier {
     // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
   }
+
+  // Add method to save avatar when customized
+  Future<void> saveAvatarData(Map<String, dynamic> avatarData) async {
+    await _settingsService.saveAvatarData(avatarData);
+    notifyListeners();
+  }
+
+  // Add method to load avatar data
+  Future<Map<String, dynamic>> loadAvatarData() async {
+    return await _settingsService.loadAvatarData();
+  }
 }

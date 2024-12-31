@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logging/logging.dart';
 
 class SetupScreen extends StatefulWidget {
    final bool isLoggedIn;
@@ -15,8 +16,10 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-      bool _userExists = false;
-      String _lastLogin = '';
+  final _log = Logger('SetupAccount');
+
+  bool _userExists = false;
+  String _lastLogin = '';
 
   @override
   void initState() {
@@ -53,6 +56,8 @@ class _SetupScreenState extends State<SetupScreen> {
    
   }
 
+
+
   Widget build(BuildContext context){
     return Container(
       decoration: BoxDecoration(
@@ -77,7 +82,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   child: SizedBox(
                     width: 300,
                     child: ElevatedButton(
-                      onPressed: () => context.push('/login'),
+                      onPressed: () => context.push('/'),
                       child:  Text('Login as $_lastLogin'),
                     ),
                   ),
@@ -114,14 +119,13 @@ class _SetupScreenState extends State<SetupScreen> {
                           if (demoPhrase != null) {
                             context.push('/passwordSetup/$demoPhrase');
                           } else {
-                            print('DEMO_PHRASE not found in .env file');
+                            _log.severe('DEMO_PHRASE not found in .env file');
                           }
                         } catch (e) {
-                          print('Failed to load .env file: $e');
+                          _log.severe('Failed to load .env file', e);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text('Failed to load .env file, error is: $e'),
+                              content: Text('Failed to load .env file, error is: $e'),
                               duration: const Duration(seconds: 3),
                             ),
                           );

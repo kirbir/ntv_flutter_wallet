@@ -105,27 +105,26 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           foregroundColor: AppColors.gray900,
           elevation: 0,
         ),
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           primary: AppColors.primaryBlue,
           secondary: AppColors.secondaryBlue,
-          background: Colors.white,
           surface: Colors.white,
           onSurface: AppColors.gray900,
         ),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           titleLarge: TextStyle(color: AppColors.gray900),
           bodyLarge: TextStyle(color: AppColors.gray900),
           bodyMedium: TextStyle(color: AppColors.gray700),
         ),
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: AppColors.primaryBlue,
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primaryBlue,
           unselectedItemColor: AppColors.gray600,

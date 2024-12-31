@@ -12,9 +12,11 @@ import 'package:ntv_flutter_wallet/pages/setup_account.dart';
 import 'package:ntv_flutter_wallet/pages/setup_password.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/pages/transactions.dart';
-import 'package:ntv_flutter_wallet/pages/send_transaction.dart';
+import 'package:ntv_flutter_wallet/pages/send_tx.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 void main() async {
+  setupLogging();
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());
@@ -80,14 +82,14 @@ class MyApp extends StatelessWidget {
           return const HomeScreen();
         }),
     GoRoute(
+        path: '/send_tx',
+        builder: (context, state) {
+          return const SendScreen();
+        }),
+    GoRoute(
         path: '/transactions',
         builder: (context, state) {
           return const TransactionsScreen();
-        }),
-    GoRoute(
-        path: '/send',
-        builder: (context, state) {
-          return const SendScreen();
         }),
   ]);
 // #endregion

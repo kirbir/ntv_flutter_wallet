@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:go_router/go_router.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
@@ -14,10 +13,10 @@ import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:ntv_flutter_wallet/services/wallet_service.dart';
 import 'package:intl/intl.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
-import 'package:ntv_flutter_wallet/pages/send_transaction.dart';
-import 'package:ntv_flutter_wallet/pages/transactions.dart';
 import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
-
+import 'package:fluttermoji/fluttermoji.dart';
+import 'dart:async';
+import 'package:logging/logging.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,11 +26,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _log = Logger('HomeScreen');
+
   String? _publicKey;
-  String? _balance;
+
   SolanaClient? client;
   bool _isHealthy = false;
-  int _selectedIndex = 0;
   num? solBalance;
   double solDollarPrice = 0;
   Map<String, double> _coinPrices = {};
@@ -48,11 +48,24 @@ class _HomeScreenState extends State<HomeScreen> {
     decimalDigits: 2,
   );
 
+  Timer? _priceRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     startup();
+
+    // Set up timer for price refresh every 15 seconds
+    _priceRefreshTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _loadPrices(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _priceRefreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> startup() async {
@@ -75,57 +88,56 @@ class _HomeScreenState extends State<HomeScreen> {
           automaticallyImplyLeading: false,
           bottom: PreferredSize(
               preferredSize: const Size.fromHeight(8.0), child: Container()),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 16, // Size of the avatar
-                    backgroundColor: Colors.grey[800], // Dark background
-                    child: const Icon(
-                      Icons.person, // Default person icon
-                      size: 20,
-                      color: Colors.white,
-                    ),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Row(
+                    children: [
+                      FluttermojiCircleAvatar(
+                        radius: 26,
+                        backgroundColor: Colors.grey[800],
+                      ),
+                      const SizedBox(width: 8),
+                      const SizedBox(height: 8),
+                      if (_publicKey != null)
+                        Text(
+                            style: const TextStyle(fontSize: 18),
+                            '${_publicKey!.substring(0, 4)}...${_publicKey!.substring(_publicKey!.length - 4)}')
+                      else
+                        const Text('Loading...'),
+                      IconButton(
+                        onPressed: () {
+                          if (_publicKey != null) {
+                            Clipboard.setData(ClipboardData(text: _publicKey!));
+                          }
+                        },
+                        icon: const Icon(Icons.copy_all),
+                        iconSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 8),
-                  const SizedBox(height: 8),
-                  if (_publicKey != null)
-                    Text(_publicKey!.substring(0, 4) +
-                        '...' +
-                        _publicKey!.substring(_publicKey!.length - 4))
-                  else
-                    const Text('Loading...'),
-                  IconButton(
-                    onPressed: () {
-                      if (_publicKey != null) {
-                        Clipboard.setData(ClipboardData(text: _publicKey!));
-                      }
-                    },
-                    icon: const Icon(Icons.copy_all),
-                    iconSize: 16,
-                    color: Colors.grey,
-                  ),
-                ],
-              ),
-              RpcSelector(
-                currentNetwork: currentNetwork,
-                isHealthy: _isHealthy,
-                onNetworkChanged: (newNetwork) {
-                  setState(() {
-                    currentNetwork = newNetwork;
-                  });
-                  _initializeClient(newNetwork);
-                },
-              ),
-            ],
+                ),
+                RpcSelector(
+                  currentNetwork: currentNetwork,
+                  isHealthy: _isHealthy,
+                  onNetworkChanged: (newNetwork) {
+                    setState(() {
+                      currentNetwork = newNetwork;
+                    });
+                    _initializeClient(newNetwork);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         body: Column(
- 
           children: [
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // #Region BALANCE CARD
             Card.outlined(
               child: Padding(
@@ -224,7 +236,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final signature =
                                       await _walletService.requestAirdrop(
                                           _publicKey!, lamportsPerSol);
-                                  print('Airdrop requested: $signature');
+                                  _log.info('Airdrop requested: $signature');
+
                                   _getBalance();
                                 },
                                 color: Theme.of(context).brightness ==
@@ -235,8 +248,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const Text('Airdrop',
                                   style: TextStyle(fontSize: 12)),
+                              const ScaffoldMessenger(
+                                child: SnackBar(
+                                  content: Text(
+                                      'Airdrop request was made...'),
+                                ),
+                              )
                             ],
                           ),
+                          
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -321,8 +341,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-                PriceTicker(prices: _coinPrices),
-                           ],
+            PriceTicker(prices: _coinPrices),
+          ],
         ),
         bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
@@ -343,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeClient(String network) async {
     try {
-      print('Initializing client for $network');
+      _log.info('Initializing client for $network');
 
       // Get URLs from RpcNetwork configuration
       final rpcUrl = RpcNetwork.getRpcUrl(network);
@@ -361,85 +381,85 @@ class _HomeScreenState extends State<HomeScreen> {
       _walletService = WalletService(client: client!);
       _getBalance();
     } catch (e) {
-      print('Error initializing client: $e');
+      _log.severe('Error initializing client: $e');
       setState(() => _isHealthy = false);
     }
   }
 
   void _getBalance() async {
     try {
-      setState(() => _balance = null);
-
       final result = await _walletService.getBalanceAndTokens(_publicKey!);
-
       setState(() {
         _myTokens = result.tokens;
-        _balance = result.solBalance.toString();
         solBalance = result.solBalance * (solDollarPrice ?? 0);
       });
     } catch (e) {
-      print('Error getting balance: $e');
+      _log.severe('Error getting balance: $e');
       setState(() => _isHealthy = false);
     }
   }
 
   Future<void> _checkConnection() async {
     try {
-      print('Checking connection for ${currentNetwork}');
+      _log.info('Checking connection for $currentNetwork');
       final response = await client?.rpcClient.getHealth();
       if (response == 'ok') {
         setState(() {
-          print('Node is healthy');
-          _isHealthy = true; // Set AppBar Icon to Green Color - Node is healthy
+          _log.info('Node is healthy');
+          _isHealthy = true;
         });
       } else {
         setState(() {
-          _isHealthy = false; // Node is unhealthy or error occurred
+          _isHealthy = false;
         });
         throw Exception('Node is unhealthy');
       }
     } on HttpException catch (e, s) {
-      print('Error checking connection: $e stacktrace: $s');
+      _log.severe('Error checking connection: $e', e, s);
       setState(() {
         _isHealthy = false;
-        ; // Node is unhealthy or error occurred
       });
     }
   }
 
   Future<void> _loadPrices() async {
     try {
-      // Get single coin price
       double solanaPrice = await TokenService.getSolanaPrice();
-      print('Solana price: \$$solanaPrice');
+      _log.info('Solana price: \$$solanaPrice');
 
-      // Get multiple SPL Coin prices
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
 
       setState(() {
         solDollarPrice = solanaPrice;
-        _coinPrices = prices; // Update the state with new prices
+        _coinPrices = prices;
       });
-
-      // prices.forEach((coin, price) {
-      //   print('$coin: \$$price');
-      // });
     } catch (e) {
-      print('Error loading prices: $e');
+      _log.severe('Error loading prices: $e');
     }
   }
 
-
   double get totalBalanceInUsd {
-    double total = (solBalance ?? 0) * solDollarPrice;
+    double total = 0;
 
-    // Add value of other tokens
     for (var token in _myTokens) {
-      // Get token price from _coinPrices if available
-      final tokenPrice = _coinPrices[token.symbol.toLowerCase()] ?? 0.0;
-      total += token.amount * tokenPrice;
+      double tokenUsdPrice;
+
+      if (token.symbol.toLowerCase().contains('usd')) {
+        tokenUsdPrice = 1.0;
+      } else {
+        tokenUsdPrice = _coinPrices[token.symbol.toLowerCase()] ?? 0.0;
+      }
+
+      final tokenTotalValue = token.amount * tokenUsdPrice;
+      total += tokenTotalValue;
+
+      _log.fine('Token Symbol: ${token.symbol.toLowerCase()}');
+      _log.fine('Token Amount: ${token.amount}');
+      _log.fine('Token Price: \$${tokenUsdPrice}');
+      _log.fine('Token Total Value: \$${tokenTotalValue}');
     }
 
+    _log.info('Final total: $total');
     return total;
   }
 }

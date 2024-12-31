@@ -19,7 +19,7 @@ class BottomNavBar extends StatelessWidget {
             GoRouter.of(context).go('/home');
             break;
           case 1:
-            GoRouter.of(context).push('/send');
+            GoRouter.of(context).push('/send_tx');
             break;
           case 2:
             GoRouter.of(context).go('/transactions');

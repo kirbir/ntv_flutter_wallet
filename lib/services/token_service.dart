@@ -1,7 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:logging/logging.dart';
 
 class TokenService {
+  static final _log = Logger('TokenService');
+
   static const String baseUrl = 'https://api.coingecko.com/api/v3';
 
   // Get single coin price
@@ -32,12 +35,15 @@ class TokenService {
         
         for (var coin in data) {
           prices[coin['id']] = coin['current_price'].toDouble();
+          prices[coin['symbol'].toLowerCase()] = coin['current_price'].toDouble();
         }
+        _log.info('Loaded prices: $prices');
         return prices;
       }
       throw Exception('Failed to load coin prices');
     } catch (e) {
-      throw Exception('Error: $e');
+      _log.severe('Error loading prices: $e');
+      rethrow;
     }
   }
 }

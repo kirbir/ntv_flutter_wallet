@@ -2,8 +2,10 @@ import 'package:solana/solana.dart';
 import 'package:solana/dto.dart';
 import '../models/my_tokens.dart';
 import '../services/metadata_service.dart';
+import 'package:logging/logging.dart';
 
 class WalletService {
+  final _log = Logger('WalletService');
   final SolanaClient client;
   
   WalletService({required this.client});
@@ -39,14 +41,14 @@ class WalletService {
         amount: solBalance,
       ));
 
-      if (tokenAccounts != null) {
+      
         await _processTokenAccounts(tokenAccounts.value, tokens);
-      }
+     
 
       return (tokens: tokens, solBalance: solBalance);
     } catch (e, stackTrace) {
-      print('Error in getBalanceAndTokens: $e');
-      print('Stack trace: $stackTrace');
+      _log.severe('Error in getBalanceAndTokens', e, stackTrace);
+      _log.severe('Stack trace:', null, stackTrace);
       rethrow;
     }
   }
@@ -65,7 +67,7 @@ class WalletService {
           }
         }
       } catch (e) {
-        print('Error processing token account: $e');
+        _log.warning('Error processing token account: $e');
       }
     }
   }
@@ -94,7 +96,7 @@ class WalletService {
       final signature = await client.rpcClient.requestAirdrop(pubKey, lamports);
       return signature;
     } catch (e) {
-      print('Error in requestAirdrop: $e');
+      _log.severe('Error in requestAirdrop: $e');
       rethrow;
     }
   }

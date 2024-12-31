@@ -15,7 +15,7 @@ class PriceTicker extends StatelessWidget {
     if (prices.isEmpty) {
       return Container(
         height: 40,
-        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.primaryContainer,
         child: const Center(
           child: Text('Loading prices...'),
         ),
@@ -29,7 +29,7 @@ class PriceTicker extends StatelessWidget {
 
     return Container(
       height: 40,
-      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: Marquee(
         text: topCoins,
         style: const TextStyle(fontSize: 16),
