@@ -5,11 +5,12 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'package:fluttermoji/fluttermoji.dart';
 
 class SetupScreen extends StatefulWidget {
-   final bool isLoggedIn;
-    String username ='';
-   SetupScreen({super.key, required this.isLoggedIn});
+  final bool isLoggedIn;
+  String username = '';
+  SetupScreen({super.key, required this.isLoggedIn});
 
   @override
   State<SetupScreen> createState() => _SetupScreenState();
@@ -31,7 +32,6 @@ class _SetupScreenState extends State<SetupScreen> {
     final prefs = await SharedPreferences.getInstance();
     final password = prefs.getString('password');
     final username = prefs.getString('username');
-  
 
     // Only allow login if the user has a username and password
     // and the user hasn't already logged in
@@ -49,16 +49,10 @@ class _SetupScreenState extends State<SetupScreen> {
 
     if (password != null && widget.isLoggedIn) {
       context.push('/login');
-
-    } else {
-      
-    }
-   
+    } else {}
   }
 
-
-
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient:
@@ -71,24 +65,23 @@ class _SetupScreenState extends State<SetupScreen> {
             height: 400,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-            
               children: [
-                Image.asset(
-                  'assets/images/Viking.png',
-                  width: 200,
-                ),
+                _userExists == false
+                    ? FluttermojiCircleAvatar()
+                    : Icon(Icons.person),
                 // if there is a user stored in memory, show option to login
-                   if (_userExists) Expanded (
+                if (_userExists) const SizedBox(height: 16),
+                Expanded(
                   child: SizedBox(
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () => context.push('/'),
-                      child:  Text('Login as $_lastLogin'),
+                      child: Text('Login as $_lastLogin'),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Expanded (
+                Expanded(
                   child: SizedBox(
                     width: 300,
                     child: ElevatedButton(
@@ -125,7 +118,8 @@ class _SetupScreenState extends State<SetupScreen> {
                           _log.severe('Failed to load .env file', e);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to load .env file, error is: $e'),
+                              content: Text(
+                                  'Failed to load .env file, error is: $e'),
                               duration: const Duration(seconds: 3),
                             ),
                           );
@@ -143,5 +137,3 @@ class _SetupScreenState extends State<SetupScreen> {
     );
   }
 }
-
-

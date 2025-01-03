@@ -5,12 +5,12 @@ class AppColors {
   static const backgroundDark = Color(0xFF121212);
   static const surfaceDark = Color(0xFF1E1E1E);
   static const cardDark = Color(0xFF252525);
-  
+
   // Blues
   static const primaryBlue = Color(0xFF1a237e);
   static const secondaryBlue = Color(0xFF0d47a1);
   static const tertiaryBlue = Color(0xFF01579b);
-  
+
   // Grays
   static const gray100 = Color(0xFFF5F5F5);
   static const gray200 = Color(0xFFEEEEEE);
@@ -44,12 +44,27 @@ class AppColors {
 
   // Text colors
   static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xB3FFFFFF);  // 70% white
-  static const textHint = Color(0x80FFFFFF);       // 50% white
+  static const textSecondary = Color(0xB3FFFFFF); // 70% white
+  static const textHint = Color(0x80FFFFFF); // 50% white
 
   // Status colors
   static const success = Colors.greenAccent;
   static const error = Color(0xFFFF5252);
   static const warning = Color(0xFFFFC107);
   static const info = Color(0xFF2196F3);
+
+  // Light theme colors
+  static const backgroundLight = Color(0xFFF8F9FA);
+  static const surfaceLight = Color(0xFFFFFFFF);
+  static const cardLight = Color(0xFFFAFAFA);
+
+  // Light theme gradient
+  static const lightThemeGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFE3F2FD), // Light blue
+      Color(0xFFE8EAF6), // Light indigo
+    ],
+  );
 }

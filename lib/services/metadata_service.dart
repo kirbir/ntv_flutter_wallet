@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 
 class TokenMetadataService {
   static final _log = Logger('TokenMetadataService');
-  
+
   // Jupiter API endpoint for token metadata
   static const String _jupiterApiUrl = 'https://token.jup.ag/all';
 
@@ -42,7 +42,8 @@ class TokenMetadataService {
           _tokenListCache = {
             for (var token in tokens) token['address'] as String: token
           };
-          _log.info('Loaded ${_tokenListCache?.length} tokens from Jupiter API');
+          _log.info(
+              'Loaded ${_tokenListCache?.length} tokens from Jupiter API');
         } else {
           throw Exception('Failed to load token list');
         }
@@ -67,6 +68,7 @@ class TokenMetadataService {
         'name': 'Unknown Token',
         'decimals': 9,
         'logoURI': null,
+        'amount': 0.0,
       };
     } catch (e) {
       _log.severe('Error fetching token metadata: $e');
@@ -75,6 +77,7 @@ class TokenMetadataService {
         'name': 'Unknown Token',
         'decimals': 9,
         'logoURI': null,
+        'amount': 0.0,
       };
     }
   }

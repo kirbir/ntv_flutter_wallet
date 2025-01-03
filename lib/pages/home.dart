@@ -163,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 120,
                                   height: 30,
                                   decoration: BoxDecoration(
+                                    border: Border.all(),
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
@@ -248,15 +249,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const Text('Airdrop',
                                   style: TextStyle(fontSize: 12)),
-                              const ScaffoldMessenger(
-                                child: SnackBar(
-                                  content: Text(
-                                      'Airdrop request was made...'),
-                                ),
-                              )
+                              // const ScaffoldMessenger(
+                              //   child: SnackBar(
+                              //     content: Text('Airdrop request was made...'),
+                              //   ),
+                              // )
                             ],
                           ),
-                          
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -305,8 +304,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(44, 202, 203, 255),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color.fromARGB(44, 202, 203, 255)
+                                  : AppColors.cardLight,
                               borderRadius: BorderRadius.circular(12),
+                              border: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? null
+                                  : Border.all(
+                                      color: AppColors.primaryBlue
+                                          .withOpacity(0.1),
+                                      width: 1,
+                                    ),
                             ),
                             child: ListTile(
                               leading: token.logoUri != null
@@ -315,23 +325,50 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: 24,
                                       height: 24,
                                       errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(Icons.token,
-                                                  color: Colors.white),
+                                          (context, error, stackTrace) => Icon(
+                                        Icons.token,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : AppColors.primaryBlue,
+                                      ),
                                     )
-                                  : const Icon(Icons.token,
-                                      color: Colors.white),
-                              title: Text(token.symbol,
-                                  style: const TextStyle(color: Colors.white)),
-                              subtitle: Text(token.name ?? '',
-                                  style: const TextStyle(color: Colors.white)),
-                              trailing: Text(
-                                token.amount.toStringAsFixed(
-                                    token.decimals?.clamp(0, 6) ?? 6),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
+                                  : Icon(
+                                      Icons.token,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : AppColors.primaryBlue,
+                                    ),
+                              title: Text(
+                                token.symbol,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                token.name ?? '',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: SizedBox(
+                                width: 100,
+                                child: Text(
+                                  token.amount.toStringAsFixed(
+                                      token.decimals?.clamp(0, 6) ?? 6),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
                             ),
                           )),
