@@ -38,7 +38,7 @@ class AppColors {
     end: Alignment.bottomRight,
     colors: [
       Color.fromARGB(255, 12, 36, 13),
-      Color.fromARGB(186, 3, 50, 52),
+      Color.fromARGB(184, 54, 5, 127),
     ],
   );
 
@@ -51,6 +51,7 @@ class AppColors {
   static const success = Colors.greenAccent;
   static const error = Color(0xFFFF5252);
   static const warning = Color(0xFFFFC107);
+  static const focused = Color.fromARGB(255, 181, 52, 149);
   static const info = Color(0xFF2196F3);
 
   // Light theme colors
@@ -64,7 +65,7 @@ class AppColors {
     end: Alignment.bottomRight,
     colors: [
       Color(0xFFE3F2FD), // Light blue
-      Color(0xFFE8EAF6), // Light indigo
+      Color.fromARGB(255, 189, 230, 188), // Light indigo
     ],
   );
 }

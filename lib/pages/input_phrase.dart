@@ -23,7 +23,7 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const CustomAppBar(title: 'Import Account', showSettings: true),
+        appBar: const CustomAppBar( showSettings: true, showLogo: true),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Center(

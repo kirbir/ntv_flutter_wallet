@@ -8,12 +8,27 @@ class AppTheme {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
+
               borderRadius: BorderRadius.circular(8),
             ),
-            backgroundColor: const Color.fromARGB(255, 90, 86, 62),
+            backgroundColor: const Color.fromARGB(255, 122, 53, 118),
             foregroundColor: Colors.white,
             shadowColor: const Color.fromARGB(255, 51, 49, 36),
             elevation: 5,
+          ),
+        ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+             side: const BorderSide(color: Color.fromARGB(255, 141, 52, 149), width: 2,style: BorderStyle.solid),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+             
+            ),
+            // backgroundColor: const Color.fromARGB(255, 122, 53, 118),
+            foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+
+            // shadowColor: const Color.fromARGB(255, 51, 49, 36),
+            // elevation: 5,
           ),
         ),
         // C A R D S
@@ -44,7 +59,7 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.warning, width: 2),
+            borderSide: const BorderSide(color: AppColors.focused, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -52,7 +67,7 @@ class AppTheme {
           ),
           labelStyle: const TextStyle(color: AppColors.textPrimary),
           hintStyle: const TextStyle(color: AppColors.textSecondary),
-          floatingLabelStyle: const TextStyle(color: AppColors.warning),
+          floatingLabelStyle: const TextStyle(color: AppColors.focused),
           alignLabelWithHint: true,
           floatingLabelAlignment: FloatingLabelAlignment.center,
         ),
@@ -196,11 +211,11 @@ class AppTheme {
         ),
 
         // Bottom navigation
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primaryBlue,
           unselectedItemColor: AppColors.gray600,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
           type: BottomNavigationBarType.fixed,
           elevation: 8,
           landscapeLayout: BottomNavigationBarLandscapeLayout.centered,

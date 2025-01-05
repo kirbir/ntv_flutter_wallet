@@ -494,9 +494,10 @@ class _HomeScreenState extends State<HomeScreen> {
       _log.fine('Token Amount: ${token.amount}');
       _log.fine('Token Price: \$${tokenUsdPrice}');
       _log.fine('Token Total Value: \$${tokenTotalValue}');
+      _log.fine('SOLTotal: $solBalance');
     }
 
     _log.info('Final total: $total');
-    return total;
+    return total + (solBalance ?? 0);
   }
 }

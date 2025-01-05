@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
 import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
 import 'package:logging/logging.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -18,8 +18,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   final _log = Logger('Transactions');
   List<dynamic> _transactions = [];
   bool _isLoading = true;
+  String _solscanUrl = '';
   String? _publicKey;
   SolanaClient? _client;
+  String? solscanUrl;
 
   @override
   void initState() {
@@ -51,7 +53,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final mnemonic = prefs.getString('mnemonic');
-      
+
       if (mnemonic == null || _client == null) {
         setState(() {
           _isLoading = false;
@@ -71,6 +73,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       setState(() {
         _transactions = signatures;
         _isLoading = false;
+        _solscanUrl = 'https://solscan.io/account/${keypair.address}';
       });
     } catch (e) {
       _log.severe('Error loading transactions: $e');
@@ -84,55 +87,65 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
+        gradient:
+            Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const CustomAppBar(
-          title: 'Transactions',
-          showSettings: true,
+        appBar: AppBar(
+          actions: [
+            ActionChip (
+              label: const Text('View Solscan.io'),
+              onPressed: () async  => await launchUrl(Uri.parse(_solscanUrl),),
+              avatar: const Icon(Icons.search),
+            )
+          ],
         ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
                 onRefresh: _loadTransactions,
                 child: ListView.builder(
-                itemCount: _transactions.length,
-                itemBuilder: (context, index) {
-                  final tx = _transactions[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: ListTile(
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: SelectableText('Signature: ${tx.signature.substring(0, 8)}...'),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            tx.err == null ? Icons.check_circle : Icons.error,
-                            color: tx.err == null ? Colors.green : Colors.red,
-                            size: 16,
-                          ),
-                        ],
+                  itemCount: _transactions.length,
+                  itemBuilder: (context, index) {
+                    final tx = _transactions[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      child: ListTile(
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: SelectableText(
+                                  'Signature: ${tx.signature.substring(0, 8)}...'),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              tx.err == null ? Icons.check_circle : Icons.error,
+                              color: tx.err == null ? Colors.green : Colors.red,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Slot: ${tx.slot}'),
+                            if (tx.blockTime != null)
+                              Text(
+                                  'Time: ${DateTime.fromMillisecondsSinceEpoch(tx.blockTime! * 1000).toString()}'),
+                            if (tx.memo != null) Text('Memo: ${tx.memo}'),
+                            Text(
+                                'Status: ${tx.confirmationStatus ?? "unknown"}'),
+                          ],
+                        ),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Slot: ${tx.slot}'),
-                          if (tx.blockTime != null)
-                            Text('Time: ${DateTime.fromMillisecondsSinceEpoch(tx.blockTime! * 1000).toString()}'),
-                          if (tx.memo != null) Text('Memo: ${tx.memo}'),
-                          Text('Status: ${tx.confirmationStatus ?? "unknown"}'),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-             bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
+        bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
       ),
     );
   }
-} 
+}

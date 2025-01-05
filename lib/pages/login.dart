@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = true;
   String? key;
   String? username = 'WalletUser';
+  bool _isObscured = true;
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         gradient:  Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
         child: Scaffold(
-          appBar: const CustomAppBar(title: 'Login', showSettings: true),
+          appBar: const CustomAppBar( showSettings: true, showLogo: true),
           body: Padding(
                     padding: const EdgeInsets.all(56),
         
@@ -89,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: true,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
-                            hintText: 'Enter you password',
+                            hintText: 'Enter your password',
                             floatingLabelAlignment: FloatingLabelAlignment.center,
                             border:  OutlineInputBorder(),
                           ),
@@ -130,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: SizedBox(
                                   width: double.infinity,
-                                  child: ElevatedButton(
+                                  child: OutlinedButton(
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(vertical: 16),
                                     ),

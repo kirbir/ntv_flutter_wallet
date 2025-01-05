@@ -9,7 +9,8 @@ import 'package:fluttermoji/fluttermoji.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
-  String username = '';
+  final String username = '';
+
   SetupScreen({super.key, required this.isLoggedIn});
 
   @override
@@ -28,6 +29,7 @@ class _SetupScreenState extends State<SetupScreen> {
     _checkForSavedLogin(context);
   }
 
+
   Future<void> _checkForSavedLogin(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final password = prefs.getString('password');
@@ -40,14 +42,17 @@ class _SetupScreenState extends State<SetupScreen> {
       setState(() {
         _userExists = true;
         _lastLogin = username;
+        _log.info('User does exist: $username');
       });
     } else {
       setState(() {
         _userExists = false;
+        _log.info('No user exists');
       });
     }
 
     if (password != null && widget.isLoggedIn) {
+      if (!mounted) return;
       context.push('/login');
     } else {}
   }
@@ -59,32 +64,44 @@ class _SetupScreenState extends State<SetupScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'Login', showSettings: true),
+        appBar: const CustomAppBar( showSettings: true, showLogo: true),
         body: Center(
           child: SizedBox(
             height: 400,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _userExists == false
+           
+
+                _userExists == true
                     ? FluttermojiCircleAvatar()
-                    : Icon(Icons.person),
+                    : const Icon(Icons.account_circle, size: 100),
+                const Spacer(),
                 // if there is a user stored in memory, show option to login
-                if (_userExists) const SizedBox(height: 16),
-                Expanded(
-                  child: SizedBox(
-                    width: 300,
-                    child: ElevatedButton(
-                      onPressed: () => context.push('/'),
-                      child: Text('Login as $_lastLogin'),
+                if (_userExists) ...[
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SizedBox(
+
+                      width: 240,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 142, 66, 138),
+               
+                          elevation: 10,
+                        ),
+                        onPressed: () => context.push('/'),
+                        child: Text('Login as $_lastLogin'),
+                      ),
                     ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 16),
                 Expanded(
                   child: SizedBox(
-                    width: 300,
+                    width: 240,
                     child: ElevatedButton(
+                      
                       onPressed: () => context.push('/inputphrase'),
                       child: const Text('Import using recovery phrase'),
                     ),
@@ -94,7 +111,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
                 Expanded(
                   child: SizedBox(
-                    width: 300,
+                    width: 240,
                     child: ElevatedButton(
                       onPressed: () => context.push('/generatePhrase'),
                       child: const Text('Create new wallet'),
@@ -104,7 +121,7 @@ class _SetupScreenState extends State<SetupScreen> {
                 const SizedBox(height: 16),
                 Expanded(
                   child: SizedBox(
-                    width: 300,
+                    width: 240,
                     child: ElevatedButton(
                       onPressed: () {
                         try {

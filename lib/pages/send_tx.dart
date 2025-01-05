@@ -87,8 +87,9 @@ class _SendScreenState extends State<SendScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: const CustomAppBar(
-          title: 'Send Token',
+
           showSettings: true,
+          showLogo: true,
         ),
         body: _isLoading 
           ? const Center(child: CircularProgressIndicator())

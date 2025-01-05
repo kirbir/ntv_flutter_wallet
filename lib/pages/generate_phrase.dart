@@ -29,7 +29,7 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
         gradient: Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'Login', showSettings: true),
+        appBar: const CustomAppBar( showSettings: true, showLogo: true),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
