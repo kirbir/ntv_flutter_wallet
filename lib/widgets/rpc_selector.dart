@@ -41,12 +41,12 @@ class _RpcSelectorState extends State<RpcSelector> {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              Icon(Icons.lan_outlined, size: 25, color: rpcColor),
+              Icon(Icons.lan_outlined, size: 16, color: rpcColor),
               DropdownButton<String>(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                 underline: Container(),
                 icon: const Icon(Icons.arrow_drop_down_outlined),
-                iconSize: 24,
+                iconSize: 16,
                 iconEnabledColor:
                     Theme.of(context).brightness == Brightness.dark
                         ? const Color.fromARGB(255, 255, 255, 255)

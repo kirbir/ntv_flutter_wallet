@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:go_router/go_router.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:logging/logging.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 class GeneratePhraseScreen extends StatefulWidget {
   const GeneratePhraseScreen({super.key});
@@ -15,7 +14,7 @@ class GeneratePhraseScreen extends StatefulWidget {
 }
 
 class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
-  final _log = Logger('GeneratePhraseScreen');
+
   String _mnemonic = "";
   List<String> _phraseList = [];
   Icon iconButton = const Icon(Icons.copy);
@@ -32,7 +31,7 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
 
     setState(() {
       _mnemonic = mnemonic;
-      _log.info('Generated mnemonic: $_mnemonic');
+      logger.i('Generated mnemonic: $_mnemonic');
       _phraseList = _mnemonic.split(' ');
     });
   }

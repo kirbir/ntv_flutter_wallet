@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solana/solana.dart';
-import 'package:ntv_flutter_wallet/widgets/send_dialog.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
 import 'package:ntv_flutter_wallet/widgets/price_ticker.dart';
 import 'package:ntv_flutter_wallet/models/my_tokens.dart';
@@ -17,7 +16,9 @@ import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'dart:async';
-import 'package:logging/logging.dart';
+import 'package:ntv_flutter_wallet/services/metadata_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _log = Logger('HomeScreen');
+ 
 
   String? _publicKey;
 
@@ -57,14 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
     startup();
 
     // Set up timer for price refresh every 15 seconds
-    _priceRefreshTimer = Timer.periodic(
-      const Duration(seconds: 15),
-      (_)  {
-        if (mounted) {
-          _getBalance();
-          }
-          },
-    );
+    // _priceRefreshTimer = Timer.periodic(
+    //   const Duration(seconds: 15),
+    //   (_)  {
+    //     if (mounted) {
+    //       _getBalance();
+    //       }
+    //       },
+    // );
   }
 
   @override
@@ -148,175 +149,271 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        body: Column(
-          children: [
-            const SizedBox(height: 24),
-            // #Region BALANCE CARD
-            Card.outlined(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 2,
-                  children: [
-                    const Text('Balance',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // If no prices are loaded, show a shimmer loading effect
-                        _coinPrices.isEmpty
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.transparent,
-                                highlightColor: Colors.grey[600]!,
-                                child: Container(
-                                  width: 120,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(4),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
+              // #Region BALANCE CARD
+              Card.outlined(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 2,
+                    children: [
+                      const Text('Balance',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // If no prices are loaded, show a shimmer loading effect
+                          _coinPrices.isEmpty
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.transparent,
+                                  highlightColor: Colors.grey[600]!,
+                                  child: Container(
+                                    width: 120,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
                                   ),
+                                )
+                              : Text(
+                                  _currencyFormatter.format(totalBalanceInUsd),
+                                  style:
+                                      Theme.of(context).textTheme.headlineMedium,
                                 ),
-                              )
-                            : Text(
-                                _currencyFormatter.format(totalBalanceInUsd),
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16,),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton.outlined(
-                        icon: const Icon(Icons.send_to_mobile),
-                        onPressed: ()  {
-                         context.push('/send_tx');
-                        },
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.success
-                            : AppColors.primaryBlue,
-                        iconSize: 28,
-                      ),
-                       Text('Send', style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                  
-                  Column(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton.outlined(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: _getBalance,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.success
-                            : AppColors.primaryBlue,
-                        iconSize: 28,
-                      ),
-                       Text('Refresh', style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                  if (currentNetwork == 'Devnet')
+              const SizedBox(height: 16,),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
                     Column(
                       spacing: 4,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton.outlined(
-                          icon: const Icon(Icons.downloading),
-                          onPressed: () async {
-                            final signature = await _walletService
-                                .requestAirdrop(_publicKey!, lamportsPerSol);
-                            _log.info('Airdrop requested: $signature');
-
-                            _getBalance();
+                          icon: const Icon(Icons.send_to_mobile),
+                          onPressed: ()  {
+                           context.push('/send_tx');
                           },
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.success
                               : AppColors.primaryBlue,
                           iconSize: 28,
                         ),
-                         Text('Airdrop', style: Theme.of(context).textTheme.bodySmall),
+                         Text('Send', style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
-                  Column(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton.outlined(
-                        icon: const Icon(Icons.copy),
-                        onPressed: () {
-                          if (_publicKey != null) {
-                            Clipboard.setData(ClipboardData(text: _publicKey!));
-                          }
-                        },
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.success
-                            : AppColors.primaryBlue,
-                        iconSize: 28,
+                    
+                    Column(
+                      spacing: 4,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton.outlined(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: _getBalance,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.success
+                              : AppColors.primaryBlue,
+                          iconSize: 28,
+                        ),
+                         Text('Refresh', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                    if (currentNetwork == 'Devnet')
+                      Column(
+                        spacing: 4,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton.outlined(
+                            icon: const Icon(Icons.downloading),
+                            onPressed: () async {
+                              final signature = await _walletService
+                                  .requestAirdrop(_publicKey!, lamportsPerSol);
+                              logger.d('Airdrop requested: $signature');
+
+                              _getBalance();
+                            },
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.success
+                                : AppColors.primaryBlue,
+                            iconSize: 28,
+                          ),
+                           Text('Airdrop', style: Theme.of(context).textTheme.bodySmall),
+                        ],
                       ),
-                       Text('Copy', style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
+                    Column(
+                      spacing: 4,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton.outlined(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () {
+                            if (_publicKey != null) {
+                              Clipboard.setData(ClipboardData(text: _publicKey!));
+                            }
+                          },
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.success
+                              : AppColors.primaryBlue,
+                          iconSize: 28,
+                        ),
+                         Text('Copy', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // #endregion
+              const SizedBox(height: 16),
+              // #Region My Tokens Card
+              Center(
+                child: Column(
+                  children: [
+                    Text('My Tokens',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 0, 0, 0),
+                        )),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  ..._myTokens.map((token) => Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? const Color.fromARGB(44, 202, 203, 255)
+                              : AppColors.cardLight,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? null
+                              : Border.all(
+                                  color: AppColors.primaryBlue,
+                                  width: 1,
+                                ),
+                        ),
+                        child: ListTile(
+                          leading: token.logoUri != null
+                              ? Image.network(
+                                  token.logoUri!,
+                                  width: 24,
+                                  height: 24,
+                                  errorBuilder:
+                                      (context, error, stackTrace) => Icon(
+                                    Icons.token,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : AppColors.primaryBlue,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.token,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : AppColors.primaryBlue,
+                                ),
+                          title: Text(
+                            token.symbol,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            token.name ?? '',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: SizedBox(
+                            width: 100,
+                            child: Text(
+                              token.amount.toStringAsFixed(
+                                  token.decimals?.clamp(0, 6) ?? 6),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                        ),
+                      )),
                 ],
               ),
-            ),
-            // #endregion
-            const SizedBox(height: 16),
-            // #Region My Tokens Card
-            Expanded(
-              child: ListView(
-                children: [
-                  const SizedBox(height: 24),
-
-                   Center(
-                    child: Column(
-                      children: [
-                        Text('My Tokens',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? const Color.fromARGB(255, 255, 255, 255)
-                                  : const Color.fromARGB(255, 0, 0, 0),
-                            )),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      ..._myTokens.map((token) => Container(
+              // #endregion
+              
+              // Trending Coins section
+              const SizedBox(height: 24),
+              Center(
+                child: Column(
+                  children: [
+                    Text('Trending on Birdeye.so',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 0, 0, 0),
+                        )),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: TokenMetadataService().getTrendingCoins(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('No trending coins available');
+                  } else {
+                    return Column(
+                      children: snapshot.data!.map((coin) => Container(
                             margin: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
+                              color: Theme.of(context).brightness == Brightness.dark
                                   ? const Color.fromARGB(44, 202, 203, 255)
                                   : AppColors.cardLight,
                               borderRadius: BorderRadius.circular(12),
-                              border: Theme.of(context).brightness ==
-                                      Brightness.dark
+                              border: Theme.of(context).brightness == Brightness.dark
                                   ? null
                                   : Border.all(
                                       color: AppColors.primaryBlue,
@@ -324,14 +421,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                             ),
                             child: ListTile(
-                              leading: token.logoUri != null
+                              leading: coin['logoURI'] != null
                                   ? Image.network(
-                                      token.logoUri!,
+                                      coin['logoURI'],
                                       width: 24,
                                       height: 24,
-                                      errorBuilder:
-                                          (context, error, stackTrace) => Icon(
-                                        Icons.token,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Icon(
+                                        Icons.trending_up,
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
                                             ? Colors.white
@@ -339,14 +436,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     )
                                   : Icon(
-                                      Icons.token,
+                                      Icons.trending_up,
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
                                           ? Colors.white
                                           : AppColors.primaryBlue,
                                     ),
                               title: Text(
-                                token.symbol,
+                                coin['symbol'] ?? 'N/A',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
@@ -355,36 +452,37 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              subtitle: Text(
-                                token.name ?? '',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                                overflow: TextOverflow.ellipsis,
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    coin['price'] != null
+                                        ? '\$${coin['price'].toStringAsFixed(4)}'
+                                        : 'N/A',
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+
+                                  Text(
+                                    '24H Volume: ${coin['dailyVolume'] ?? 'N/A'}',
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
                               ),
-                              trailing: SizedBox(
-                                width: 100,
-                                child: Text(
-                                  token.amount.toStringAsFixed(
-                                      token.decimals?.clamp(0, 6) ?? 6),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
-                                ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.swap_horiz),
+                                onPressed: () {
+                                  final url = coin['swapLink'];
+                                  launchUrl(Uri.parse(url));
+                                },
                               ),
                             ),
-                          )),
-                    ],
-                  ),
-                  // #endregion
-                ],
+                          )).toList(),
+                    );
+                  }
+                },
               ),
-            ),
-            PriceTicker(prices: _coinPrices),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
@@ -405,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeClient(String network) async {
     try {
-      _log.info('Initializing client for $network');
+      logger.i('Initializing client for $network');
 
       // Get URLs from RpcNetwork configuration
       final rpcUrl = RpcNetwork.getRpcUrl(network);
@@ -423,7 +521,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _walletService = WalletService(client: client!);
       _getBalance();
     } catch (e) {
-      _log.severe('Error initializing client: $e');
+      logger.e('Error initializing client: $e');
       setState(() => _isHealthy = false);
     }
   }
@@ -436,18 +534,18 @@ class _HomeScreenState extends State<HomeScreen> {
         solBalance = result.solBalance * (solDollarPrice ?? 0);
       });
     } catch (e) {
-      _log.severe('Error getting balance: $e');
+      logger.e('Error getting balance: $e');
       setState(() => _isHealthy = false);
     }
   }
 
   Future<void> _checkConnection() async {
     try {
-      _log.info('Checking connection for $currentNetwork');
+      logger.i('Checking connection for $currentNetwork');
       final response = await client?.rpcClient.getHealth();
       if (response == 'ok') {
         setState(() {
-          _log.info('Node is healthy');
+          logger.i('Node is healthy');
           _isHealthy = true;
         });
       } else {
@@ -457,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
         throw Exception('Node is unhealthy');
       }
     } on HttpException catch (e, s) {
-      _log.severe('Error checking connection: $e', e, s);
+      logger.e('Error checking connection: $e');
       setState(() {
         _isHealthy = false;
       });
@@ -467,19 +565,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadPrices() async {
     try {
       double solanaPrice = await TokenService.getSolanaPrice();
-      _log.info('Solana price: \$$solanaPrice');
+      logger.i('Solana price: \$$solanaPrice');
 
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
   
-      _log.info('Got ${prices.length} prices from API');
+      logger.i('Got ${prices.length} prices from API');
 
       setState(() {
         solDollarPrice = solanaPrice;
         _coinPrices = prices;
-        _log.info('Updated _coinPrices with ${_coinPrices.length} items');
+        logger.i('Updated _coinPrices with ${_coinPrices.length} items');
       });
     } catch (e) {
-      _log.severe('Error loading prices: $e');
+      logger.e('Error loading prices: $e');
     }
   }
 
@@ -498,14 +596,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final tokenTotalValue = token.amount * tokenUsdPrice;
       total += tokenTotalValue;
 
-      _log.fine('Token Symbol: ${token.symbol.toLowerCase()}');
-      _log.fine('Token Amount: ${token.amount}');
-      _log.fine('Token Price: \$${tokenUsdPrice}');
-      _log.fine('Token Total Value: \$${tokenTotalValue}');
-      _log.fine('SOLTotal: $solBalance');
+      logger.i('Token Symbol: ${token.symbol.toLowerCase()}');
+      logger.i('Token Amount in wallet: ${token.amount}');
+      logger.i('Token Price: \$${tokenUsdPrice}');
+      logger.i('Token Total Value: \$${tokenTotalValue}');
+      logger.i('SOLTotal: $solBalance');
     }
 
-    _log.info('Final total: $total');
+    logger.i('Final total: $total');
     return total + (solBalance ?? 0);
   }
 }

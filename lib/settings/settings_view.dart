@@ -68,9 +68,9 @@ class SettingsView extends StatelessWidget {
                 const SizedBox(height: 16),
                 FluttermojiCustomizer(
                   theme: FluttermojiThemeData(primaryBgColor: Theme.of(context).brightness == Brightness.dark
-                  ?  AppColors.purpleSwag
+                  ?  AppColors.gray900
                   : AppColors.backgroundLight,secondaryBgColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.purpleSwagLight
+                  ? AppColors.gray500
                   : AppColors.gray300,),
                   
                   scaffoldWidth: MediaQuery.of(context).size.width,
