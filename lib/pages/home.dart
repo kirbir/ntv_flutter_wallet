@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solana/solana.dart';
@@ -58,7 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
     // Set up timer for price refresh every 15 seconds
     _priceRefreshTimer = Timer.periodic(
       const Duration(seconds: 15),
-      (_) => _loadPrices(),
+      (_)  {
+        if (mounted) {
+          _getBalance();
+          }
+          },
     );
   }
 
@@ -96,9 +101,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 Flexible(
                   child: Row(
                     children: [
-                      FluttermojiCircleAvatar(
-                        radius: 26,
-                        backgroundColor: Colors.grey[800],
+                      GestureDetector(
+                        onTap: () {
+                          GoRouter.of(context).push('/settings');
+                        },
+                        child: FluttermojiCircleAvatar(
+                          radius: 26,
+                          backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                          ? AppColors.purpleSwagLight.withAlpha(50)
+                                          : AppColors.primaryBlue.withAlpha(50),
+                                        
+                        ),
                       ),
                       const SizedBox(width: 8),
                       const SizedBox(height: 8),
@@ -141,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // #Region BALANCE CARD
             Card.outlined(
               child: Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -180,117 +193,110 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16,),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.outlined(
+                        icon: const Icon(Icons.send_to_mobile),
+                        onPressed: ()  {
+                         context.push('/send_tx');
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.success
+                            : AppColors.primaryBlue,
+                        iconSize: 28,
+                      ),
+                       Text('Send', style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                  
+                  Column(
+                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.outlined(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: _getBalance,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.success
+                            : AppColors.primaryBlue,
+                        iconSize: 28,
+                      ),
+                       Text('Refresh', style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                  if (currentNetwork == 'Devnet')
+                    Column(
+                      spacing: 4,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton.outlined(
+                          icon: const Icon(Icons.downloading),
+                          onPressed: () async {
+                            final signature = await _walletService
+                                .requestAirdrop(_publicKey!, lamportsPerSol);
+                            _log.info('Airdrop requested: $signature');
+
+                            _getBalance();
+                          },
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.success
+                              : AppColors.primaryBlue,
+                          iconSize: 28,
+                        ),
+                         Text('Airdrop', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  Column(
+                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.outlined(
+                        icon: const Icon(Icons.copy),
+                        onPressed: () {
+                          if (_publicKey != null) {
+                            Clipboard.setData(ClipboardData(text: _publicKey!));
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.success
+                            : AppColors.primaryBlue,
+                        iconSize: 28,
+                      ),
+                       Text('Copy', style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             // #endregion
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            // #Region My Tokens Card
             Expanded(
               child: ListView(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton.outlined(
-                              icon: const Icon(Icons.send_outlined),
-                              onPressed: () async {
-                                await showSendDialog(
-                                  context,
-                                  client,
-                                  () => _getBalance(),
-                                );
-                              },
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.success
-                                  : AppColors.primaryBlue,
-                              iconSize: 28,
-                            ),
-                            const Text('Send', style: TextStyle(fontSize: 12)),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton.outlined(
-                              icon: const Icon(Icons.refresh),
-                              onPressed: _getBalance,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.success
-                                  : AppColors.primaryBlue,
-                              iconSize: 28,
-                            ),
-                            const Text('Refresh',
-                                style: TextStyle(fontSize: 12)),
-                          ],
-                        ),
-                        if (currentNetwork == 'Devnet')
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton.outlined(
-                                icon: const Icon(Icons.downloading),
-                                onPressed: () async {
-                                  final signature =
-                                      await _walletService.requestAirdrop(
-                                          _publicKey!, lamportsPerSol);
-                                  _log.info('Airdrop requested: $signature');
-
-                                  _getBalance();
-                                },
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.success
-                                    : AppColors.primaryBlue,
-                                iconSize: 28,
-                              ),
-                              const Text('Airdrop',
-                                  style: TextStyle(fontSize: 12)),
-                              // const ScaffoldMessenger(
-                              //   child: SnackBar(
-                              //     content: Text('Airdrop request was made...'),
-                              //   ),
-                              // )
-                            ],
-                          ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton.outlined(
-                              icon: const Icon(Icons.copy),
-                              onPressed: () {
-                                if (_publicKey != null) {
-                                  Clipboard.setData(
-                                      ClipboardData(text: _publicKey!));
-                                }
-                              },
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.success
-                                  : AppColors.primaryBlue,
-                              iconSize: 28,
-                            ),
-                            const Text('Copy', style: TextStyle(fontSize: 12)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // #Region My Tokens Card
                   const SizedBox(height: 24),
-                  const Center(
+
+                   Center(
                     child: Column(
                       children: [
                         Text('My Tokens',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color.fromARGB(255, 255, 255, 255)
+                                  : const Color.fromARGB(255, 0, 0, 0),
+                            )),
+                        const SizedBox(
                           height: 8,
                         ),
                       ],
@@ -313,8 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Brightness.dark
                                   ? null
                                   : Border.all(
-                                      color: AppColors.primaryBlue
-                                          .withOpacity(0.1),
+                                      color: AppColors.primaryBlue,
                                       width: 1,
                                     ),
                             ),
@@ -465,10 +470,13 @@ class _HomeScreenState extends State<HomeScreen> {
       _log.info('Solana price: \$$solanaPrice');
 
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
+  
+      _log.info('Got ${prices.length} prices from API');
 
       setState(() {
         solDollarPrice = solanaPrice;
         _coinPrices = prices;
+        _log.info('Updated _coinPrices with ${_coinPrices.length} items');
       });
     } catch (e) {
       _log.severe('Error loading prices: $e');

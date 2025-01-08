@@ -3,6 +3,8 @@ import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'settings_controller.dart';
 import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
+import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -22,9 +24,8 @@ class SettingsView extends StatelessWidget {
         gradient: Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-        ),
+        appBar: const CustomAppBar( showSettings: false, showLogo: true),
+        
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -32,9 +33,9 @@ class SettingsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const Text(
+                 Text(
                   'Theme',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
                 DropdownButton<ThemeMode>(
@@ -56,9 +57,9 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                 Text(
                   'Avatar',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
                 FluttermojiCircleAvatar(
@@ -66,6 +67,12 @@ class SettingsView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 FluttermojiCustomizer(
+                  theme: FluttermojiThemeData(primaryBgColor: Theme.of(context).brightness == Brightness.dark
+                  ?  AppColors.purpleSwag
+                  : AppColors.backgroundLight,secondaryBgColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.purpleSwagLight
+                  : AppColors.gray300,),
+                  
                   scaffoldWidth: MediaQuery.of(context).size.width,
                 ),
               ],

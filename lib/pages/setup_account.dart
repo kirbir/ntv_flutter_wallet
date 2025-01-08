@@ -6,6 +6,7 @@ import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
@@ -28,7 +29,6 @@ class _SetupScreenState extends State<SetupScreen> {
     super.initState();
     _checkForSavedLogin(context);
   }
-
 
   Future<void> _checkForSavedLogin(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -64,90 +64,258 @@ class _SetupScreenState extends State<SetupScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar( showSettings: true, showLogo: true),
+        appBar: const CustomAppBar(showSettings: true, showLogo: true),
         body: Center(
-          child: SizedBox(
-            height: 400,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-           
+          child: Column(
+            spacing: 4,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 34),
 
-                _userExists == true
-                    ? FluttermojiCircleAvatar()
-                    : const Icon(Icons.account_circle, size: 100),
-                const Spacer(),
-                // if there is a user stored in memory, show option to login
-                if (_userExists) ...[
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: SizedBox(
-
-                      width: 240,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 142, 66, 138),
-               
-                          elevation: 10,
-                        ),
-                        onPressed: () => context.push('/'),
-                        child: Text('Login as $_lastLogin'),
+              _userExists == true
+                  ? FluttermojiCircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.purpleSwagLight.withAlpha(50)
+                              : AppColors.primaryBlue.withAlpha(50),
+                    )
+                  : const Icon(Icons.account_circle, size: 100),
+              const SizedBox(
+                height: 34,
+              ),
+              // if there is a user stored in memory, show option to login
+              if (_userExists) ...[
+                Container(
+                  margin: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileMargin,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileBackground,
+                    borderRadius: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileBorderRadius,
+                    border: Border.all(
+                      color: const Color.fromRGBO(158, 158, 158, 0.2),
+                      width: 1,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.05),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    leading: Icon(
+                      Icons.login,
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileIconColor,
+                      size: 22,
+                    ),
+                    title: Text(
+                      'Login as $_lastLogin',
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .extension<CustomThemeExtension>()
+                            ?.listTileTitleColor,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Expanded(
-                  child: SizedBox(
-                    width: 240,
-                    child: ElevatedButton(
-                      
-                      onPressed: () => context.push('/inputphrase'),
-                      child: const Text('Import using recovery phrase'),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileTrailingColor,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                Expanded(
-                  child: SizedBox(
-                    width: 240,
-                    child: ElevatedButton(
-                      onPressed: () => context.push('/generatePhrase'),
-                      child: const Text('Create new wallet'),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: SizedBox(
-                    width: 240,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        try {
-                          final demoPhrase = dotenv.env['DEMO_PHRASE'];
-                          if (demoPhrase != null) {
-                            context.push('/passwordSetup/$demoPhrase');
-                          } else {
-                            _log.severe('DEMO_PHRASE not found in .env file');
-                          }
-                        } catch (e) {
-                          _log.severe('Failed to load .env file', e);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Failed to load .env file, error is: $e'),
-                              duration: const Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Use DEMO Wallet'),
-                    ),
+                    onTap: () => context.push('/'),
                   ),
                 ),
               ],
-            ),
+              const SizedBox(height: 8),
+              Container(
+                margin: Theme.of(context)
+                    .extension<CustomThemeExtension>()
+                    ?.listTileMargin,
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBackground,
+                  borderRadius: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBorderRadius,
+                  border: Border.all(
+                    color: const Color.fromRGBO(158, 158, 158, 0.2),
+                    width: 1,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  leading: Icon(
+                    Icons.key,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileIconColor,
+                    size: 22,
+                  ),
+                  title: Text(
+                    'Import using recovery phrase',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileTitleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileTrailingColor,
+                  ),
+                  onTap: () => context.push('/inputphrase'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                margin: Theme.of(context)
+                    .extension<CustomThemeExtension>()
+                    ?.listTileMargin,
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBackground,
+                  borderRadius: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBorderRadius,
+                  border: Border.all(
+                    color: const Color.fromRGBO(158, 158, 158, 0.2),
+                    width: 1,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  leading: Icon(
+                    Icons.account_balance_wallet,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileIconColor,
+                    size: 22,
+                  ),
+                  title: Text(
+                    'Create new wallet',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileTitleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileTrailingColor,
+                  ),
+                  onTap: () => context.push('/generatePhrase'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                margin: Theme.of(context)
+                    .extension<CustomThemeExtension>()
+                    ?.listTileMargin,
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBackground,
+                  borderRadius: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileBorderRadius,
+                  border: Border.all(
+                    color: const Color.fromRGBO(158, 158, 158, 0.2),
+                    width: 1,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  leading: Icon(
+                    Icons.bug_report,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileIconColor,
+                    size: 22,
+                  ),
+                  title: Text(
+                    'Use DEMO Wallet',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileTitleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileTrailingColor,
+                  ),
+                  onTap: () {
+                    try {
+                      final demoPhrase = dotenv.env['DEMO_PHRASE'];
+                      if (demoPhrase != null) {
+                        context.push('/passwordSetup/$demoPhrase');
+                      } else {
+                        _log.severe('DEMO_PHRASE not found in .env file');
+                      }
+                    } catch (e) {
+                      _log.severe('Failed to load .env file', e);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Failed to load .env file, error is: $e'),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

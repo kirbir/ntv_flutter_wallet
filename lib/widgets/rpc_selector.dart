@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
 class RpcSelector extends StatefulWidget {
   final String currentNetwork;
@@ -30,7 +31,9 @@ class _RpcSelectorState extends State<RpcSelector> {
         Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromARGB(255, 255, 255, 255)
+                  : AppColors.primaryBlue,
               width: 1,
             ),
             borderRadius: BorderRadius.circular(8),
@@ -44,7 +47,10 @@ class _RpcSelectorState extends State<RpcSelector> {
                 underline: Container(),
                 icon: const Icon(Icons.arrow_drop_down_outlined),
                 iconSize: 24,
-                iconEnabledColor: Colors.white,
+                iconEnabledColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 0, 0, 0),
                 value: widget.currentNetwork,
                 items: RpcNetwork.labels
                     .map((label) => DropdownMenuItem(
@@ -58,7 +64,6 @@ class _RpcSelectorState extends State<RpcSelector> {
                 onChanged: (newNetwork) {
                   if (newNetwork != null) {
                     widget.onNetworkChanged(newNetwork);
-                    
                   }
                 },
               ),

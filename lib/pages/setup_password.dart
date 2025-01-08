@@ -5,6 +5,8 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:logging/logging.dart';
 
+// Page where the user set's his Account name and password
+
 class SetupPasswordScreen extends StatefulWidget {
   final String? mnemonic;
   const SetupPasswordScreen({super.key, required this.mnemonic});
@@ -38,105 +40,108 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
               Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
         ),
         child: Scaffold(
+          resizeToAvoidBottomInset: true,
           appBar: const CustomAppBar(showSettings: true, showLogo: true),
           body: Padding(
             padding: const EdgeInsets.all(56),
             child: Form(
               key: formKey,
-              child: Column(
-                children: [
-                  Text(
-                    'Account name:',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: usernameController,
-                    autofocus: true,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-                      hintText: '',
-                      border: OutlineInputBorder(),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      'Account name',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Username is required';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 80),
-                  Text(
-                    'Create a password: ',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                      controller: passwordController,
-                      obscureText: _isObscured,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isObscured =! _isObscured;
-                            });
-                          },
-                          icon: _isObscured
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                        ),
-                        hintText: 'Password',
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Password is required';
-                        }
-                        return null;
-                      }),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                      controller: confirmPasswordController,
-                      obscureText: _isObscured,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isObscured =! _isObscured;
-                            });
-                          },
-                          icon: _isObscured
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                        ),
-                        hintText: 'Confirm password',
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: usernameController,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        hintText: '',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Confirm password is required';
-                        }
-                        if (value != passwordController.text) {
-                          return 'Passwords do not match';
+                          return 'Account name is required';
                         }
                         return null;
-                      }),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 26),
+                      },
+                    ),
+                    const SizedBox(height: 80),
+                    Text(
+                      'Create a password ',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                        controller: passwordController,
+                        obscureText: _isObscured,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isObscured =! _isObscured;
+                              });
+                            },
+                            icon: _isObscured
+                                ? const Icon(Icons.visibility)
+                                : const Icon(Icons.visibility_off),
                           ),
-                          onPressed: _submit,
-                          child: const Text('Submit'),
+                          hintText: 'Password',
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Password is required';
+                          }
+                          return null;
+                        }),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: _isObscured,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isObscured =! _isObscured;
+                              });
+                            },
+                            icon: _isObscured
+                                ? const Icon(Icons.visibility)
+                                : const Icon(Icons.visibility_off),
+                          ),
+                          hintText: 'Confirm password',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Confirm password is required';
+                          }
+                          if (value != passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        }),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 26),
+                            ),
+                            onPressed: _submit,
+                            child: const Text('Submit'),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),

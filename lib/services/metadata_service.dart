@@ -14,7 +14,7 @@ class TokenMetadataService {
     '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU': {
       'symbol': 'USDC',
       'name': 'USD Coin',
-      'decimals': 6,
+      'decimals': 0,
       'logoURI':
           'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
     },
@@ -22,7 +22,7 @@ class TokenMetadataService {
     'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr': {
       'symbol': 'USDC-Dev',
       'name': 'USD Coin (Devnet)',
-      'decimals': 6,
+      'decimals': 0,
       'logoURI':
           'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', // Using mainnet USDC logo
     },

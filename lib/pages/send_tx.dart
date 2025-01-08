@@ -98,6 +98,9 @@ class _SendScreenState extends State<SendScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 24,),
+                  Text('Send Transaction', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 24,),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: DropdownButtonFormField<Token>(
@@ -143,7 +146,7 @@ class _SendScreenState extends State<SendScreen> {
                       alignLabelWithHint: true,
                       border: OutlineInputBorder(),
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -155,7 +158,7 @@ class _SendScreenState extends State<SendScreen> {
                       border: const OutlineInputBorder(),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(

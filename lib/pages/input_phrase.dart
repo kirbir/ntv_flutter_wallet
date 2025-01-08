@@ -33,9 +33,9 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 24),
-                const Text(
+                 Text(
                   'Please enter your recovery phrase',
-                  style: TextStyle(fontSize: 18),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 32),
                 Form(

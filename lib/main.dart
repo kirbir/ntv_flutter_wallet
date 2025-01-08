@@ -13,10 +13,10 @@ import 'package:ntv_flutter_wallet/pages/setup_password.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/pages/transactions.dart';
 import 'package:ntv_flutter_wallet/pages/send_tx.dart';
-import 'package:ntv_flutter_wallet/services/logging_service.dart';
+import 'package:logger/logger.dart';
 
 void main() async {
-  setupLogging();
+
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());
@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.settingsController});
 
   final SettingsController settingsController;
+  final log = Logger();
 
   // #region Router
   late final GoRouter _router = GoRouter(routes: <GoRoute>[

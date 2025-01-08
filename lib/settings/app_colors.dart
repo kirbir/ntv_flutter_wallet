@@ -11,6 +11,10 @@ class AppColors {
   static const secondaryBlue = Color(0xFF0d47a1);
   static const tertiaryBlue = Color(0xFF01579b);
 
+  // Purple swag
+  static const purpleSwag = Color.fromARGB(255, 19, 104, 165);
+  static const purpleSwagLight = Color.fromARGB(255, 250, 200, 200);
+
   // Grays
   static const gray100 = Color(0xFFF5F5F5);
   static const gray200 = Color(0xFFEEEEEE);
@@ -37,7 +41,7 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color.fromARGB(255, 12, 36, 13),
+      Color.fromARGB(255, 10, 96, 113),
       Color.fromARGB(184, 54, 5, 127),
     ],
   );
@@ -48,7 +52,7 @@ class AppColors {
   static const textHint = Color(0x80FFFFFF); // 50% white
 
   // Status colors
-  static const success = Colors.greenAccent;
+  static const success = Color.fromARGB(255, 28, 203, 182);
   static const error = Color(0xFFFF5252);
   static const warning = Color(0xFFFFC107);
   static const focused = Color.fromARGB(255, 181, 52, 149);

@@ -17,13 +17,14 @@ class PriceTicker extends StatelessWidget {
         height: 40,
         color: Theme.of(context).colorScheme.primaryContainer,
         child: const Center(
-          child: Text('Loading prices...'),
+          child: Text('Loading market data...'),
         ),
       );
     }
 
     // Get top 5 coins and format their text
     final topCoins = prices.entries.take(5).map((coin) {
+      
       return '${coin.key.toUpperCase()}: \$${coin.value.toStringAsFixed(2)}';
     }).join('   |   ');
 

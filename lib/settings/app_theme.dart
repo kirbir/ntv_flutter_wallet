@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'custom_theme_extension.dart';
 
 class AppTheme {
   static ThemeData get darkTheme => ThemeData(
+     fontFamily: GoogleFonts.roboto().fontFamily,
         // E L E V A T E D - B U T T O N
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -11,7 +15,7 @@ class AppTheme {
 
               borderRadius: BorderRadius.circular(8),
             ),
-            backgroundColor: const Color.fromARGB(255, 122, 53, 118),
+            backgroundColor: AppColors.purpleSwag,
             foregroundColor: Colors.white,
             shadowColor: const Color.fromARGB(255, 51, 49, 36),
             elevation: 5,
@@ -19,7 +23,7 @@ class AppTheme {
         ),
           outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-             side: const BorderSide(color: Color.fromARGB(255, 141, 52, 149), width: 2,style: BorderStyle.solid),
+             side: const BorderSide(color: AppColors.purpleSwag, width: 2,style: BorderStyle.solid),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
              
@@ -33,7 +37,7 @@ class AppTheme {
         ),
         // C A R D S
         cardTheme: CardTheme(
-          color: Colors.blueGrey[900],
+          color: const Color.fromARGB(255, 35, 49, 46),
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -59,7 +63,7 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.focused, width: 2),
+            borderSide: const BorderSide(color: AppColors.success, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -67,7 +71,7 @@ class AppTheme {
           ),
           labelStyle: const TextStyle(color: AppColors.textPrimary),
           hintStyle: const TextStyle(color: AppColors.textSecondary),
-          floatingLabelStyle: const TextStyle(color: AppColors.focused),
+          floatingLabelStyle: const TextStyle(color: AppColors.purpleSwagLight),
           alignLabelWithHint: true,
           floatingLabelAlignment: FloatingLabelAlignment.center,
         ),
@@ -85,10 +89,10 @@ class AppTheme {
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.surfaceDark,
-          selectedItemColor: AppColors.warning,
+          selectedItemColor: AppColors.success,
           unselectedItemColor: AppColors.gray500,
           selectedIconTheme: IconThemeData(
-            color: AppColors.warning,
+            color: AppColors.success,
             size: 28,
           ),
           unselectedIconTheme: IconThemeData(
@@ -107,7 +111,10 @@ class AppTheme {
         ],
       );
 
+// L I GH T   T H E M E
+
   static ThemeData get lightTheme => ThemeData(
+    fontFamily: GoogleFonts.inter().fontFamily,
         useMaterial3: true,
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.transparent,
@@ -116,11 +123,11 @@ class AppTheme {
         cardTheme: CardTheme(
           color: AppColors.cardLight,
           elevation: 2,
-          shadowColor: AppColors.primaryBlue.withOpacity(0.2),
+          shadowColor: AppColors.primaryBlue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue,
               width: 1,
             ),
           ),
