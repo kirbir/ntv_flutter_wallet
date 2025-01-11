@@ -54,10 +54,37 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                             hintText: '${index + 1}',
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withOpacity(0.5)
+                                  : Colors.black.withOpacity(0.5),
+                            ),
                           ),
+                          style: Theme.of(context).textTheme.labelMedium,
                           onSaved: (value) {
                             _words[index] = value!;
                           },

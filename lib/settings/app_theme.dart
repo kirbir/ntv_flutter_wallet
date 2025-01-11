@@ -50,7 +50,7 @@ class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColors.cardDark,
+          fillColor: Colors.transparent,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: OutlineInputBorder(

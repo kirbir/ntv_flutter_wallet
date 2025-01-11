@@ -19,6 +19,7 @@ import 'package:ntv_flutter_wallet/services/metadata_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:ntv_flutter_wallet/services/websocket_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -165,45 +166,44 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const SizedBox(height: 24),
               // #Region BALANCE CARD
-              Card.outlined(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 2,
-                    children: [
-                      const Text('Balance',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // If no prices are loaded, show a shimmer loading effect
-                          _coinPrices.isEmpty
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.transparent,
-                                  highlightColor: Colors.grey[600]!,
-                                  child: Container(
-                                    width: 120,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(),
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 2,
+                  children: [
+                    const Text('Balance',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // If no prices are loaded, show a shimmer loading effect
+                        _coinPrices.isEmpty
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.transparent,
+                                highlightColor: Colors.grey[600]!,
+                                child: Container(
+                                  width: 120,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
-                                )
-                              : Text(
-                                  _currencyFormatter.format(totalBalanceInUsd),
-                                  style:
-                                      Theme.of(context).textTheme.headlineMedium,
                                 ),
-                        ],
-                      ),
-                    ],
-                  ),
+                              )
+                            : Text(
+                                _currencyFormatter.format(totalBalanceInUsd),
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              Text('USD', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16,),
@@ -531,20 +531,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // Clear all cache when network changes
       TokenCache.clearCache();
 
-      final rpcUrl = RpcNetwork.getRpcUrl(network);
-      final wsUrl = RpcNetwork.getWsUrl(network);
-
-      if (rpcUrl == null || wsUrl == null) {
-        throw Exception('Invalid network configuration');
-      }
-
-      client = SolanaClient(
-        rpcUrl: Uri.parse(rpcUrl),
-        websocketUrl: Uri.parse(wsUrl),
-      );
-
+      // Create client synchronously now
+      client = WebSocketService.createClient(network);
       _walletService = WalletService(client: client!);
-      _getBalance();
+      await _getBalance();
     } catch (e) {
       logger.e('Error initializing client: $e');
       setState(() => _isHealthy = false);
