@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
 import 'package:solana/encoder.dart' show SignedTx;
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 class SendScreen extends StatefulWidget {
   const SendScreen({super.key});
@@ -19,7 +19,6 @@ class SendScreen extends StatefulWidget {
 }
 
 class _SendScreenState extends State<SendScreen> {
-  final _log = Logger('SendTx');
   final addressController = TextEditingController();
   final amountController = TextEditingController();
   List<Token> _availableTokens = [];
@@ -37,12 +36,12 @@ class _SendScreenState extends State<SendScreen> {
 
   Future<void> _initializeData() async {
     try {
-      _log.info('Initializing send screen');
+      logger.i('Initializing send screen');
       final prefs = await SharedPreferences.getInstance();
       final mnemonic = prefs.getString('mnemonic');
       
       if (mnemonic == null) {
-        _log.warning('No mnemonic found');
+        logger.w('No mnemonic found');
         setState(() => _isLoading = false);
         return;
       }
@@ -71,9 +70,9 @@ class _SendScreenState extends State<SendScreen> {
         selectedToken = _availableTokens.isNotEmpty ? _availableTokens.first : null;
         _isLoading = false;
       });
-      _log.fine('Initialization complete');
+      logger.i('Initialization complete');
     } catch (e, stackTrace) {
-      _log.severe('Failed to initialize', e, stackTrace);
+      logger.e('Failed to initialize', error: e, stackTrace: stackTrace);
       setState(() => _isLoading = false);
     }
   }

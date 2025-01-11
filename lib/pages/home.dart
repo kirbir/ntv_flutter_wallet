@@ -5,7 +5,6 @@ import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
-import 'package:ntv_flutter_wallet/widgets/price_ticker.dart';
 import 'package:ntv_flutter_wallet/models/my_tokens.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
 import 'package:shimmer/shimmer.dart';
@@ -19,6 +18,7 @@ import 'dart:async';
 import 'package:ntv_flutter_wallet/services/metadata_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -75,10 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> startup() async {
-    await Future(() => _loadWalletAddress());
-    await Future(() => _initializeClient(currentNetwork));
-    await Future(() => _checkConnection());
-    await Future(() => _loadPrices());
+    try {
+      // Load wallet address first as it's required
+      await _loadWalletAddress();
+      
+      // Load these in parallel
+      final results = await Future.wait([
+        TokenCache.getCachedData('client_init', () => _initializeClient(currentNetwork)),
+        TokenCache.getCachedData('connection', () => _checkConnection()),
+        TokenCache.getCachedData('prices', () => _loadPrices()),
+      ]);
+
+      logger.i('Startup completed successfully');
+    } catch (e) {
+      logger.e('Error during startup: $e');
+    }
   }
 
   @override
@@ -298,67 +309,60 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Column(
                 children: [
-                  ..._myTokens.map((token) => Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                  ..._myTokens.map((token) => Slidable(
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {},
+                          icon: Icons.directions_transit_filled,
+                          label: 'Send',
                         ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).brightness ==
-                                  Brightness.dark
-                              ? const Color.fromARGB(44, 202, 203, 255)
-                              : AppColors.cardLight,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Theme.of(context).brightness ==
-                                  Brightness.dark
-                              ? null
-                              : Border.all(
-                                  color: AppColors.primaryBlue,
-                                  width: 1,
-                                ),
-                        ),
-                        child: ListTile(
-                          leading: token.logoUri != null
-                              ? Image.network(
-                                  token.logoUri!,
-                                  width: 24,
-                                  height: 24,
-                                  errorBuilder:
-                                      (context, error, stackTrace) => Icon(
+                      ],
+                    ),
+                    child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? const Color.fromARGB(44, 202, 203, 255)
+                                : AppColors.cardLight,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? null
+                                : Border.all(
+                                    color: AppColors.primaryBlue,
+                                    width: 1,
+                                  ),
+                          ),
+                          child: ListTile(
+                            leading: token.logoUri != null
+                                ? Image.network(
+                                    token.logoUri!,
+                                    width: 24,
+                                    height: 24,
+                                    errorBuilder:
+                                        (context, error, stackTrace) => Icon(
+                                      Icons.token,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : AppColors.primaryBlue,
+                                    ),
+                                  )
+                                : Icon(
                                     Icons.token,
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
                                         ? Colors.white
                                         : AppColors.primaryBlue,
                                   ),
-                                )
-                              : Icon(
-                                  Icons.token,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : AppColors.primaryBlue,
-                                ),
-                          title: Text(
-                            token.symbol,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            token.name ?? '',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: SizedBox(
-                            width: 100,
-                            child: Text(
-                              token.amount.toStringAsFixed(
-                                  token.decimals?.clamp(0, 6) ?? 6),
+                            title: Text(
+                              token.symbol,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -366,11 +370,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                               overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.right,
+                            ),
+                            subtitle: Text(
+                              token.name ?? '',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: SizedBox(
+                              width: 100,
+                              child: Text(
+                                token.amount.toStringAsFixed(
+                                    token.decimals?.clamp(0, 6) ?? 6),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                           ),
                         ),
-                      )),
+                  )),
                 ],
               ),
               // #endregion
@@ -504,8 +527,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initializeClient(String network) async {
     try {
       logger.i('Initializing client for $network');
+      
+      // Clear all cache when network changes
+      TokenCache.clearCache();
 
-      // Get URLs from RpcNetwork configuration
       final rpcUrl = RpcNetwork.getRpcUrl(network);
       final wsUrl = RpcNetwork.getWsUrl(network);
 
@@ -526,8 +551,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _getBalance() async {
+  Future<void> _getBalance() async {
     try {
+      // Invalidate cache before fetching new balance
+      TokenCache.invalidateKey('balance_${_publicKey!}');
       final result = await _walletService.getBalanceAndTokens(_publicKey!);
       setState(() {
         _myTokens = result.tokens;

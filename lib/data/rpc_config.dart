@@ -4,7 +4,7 @@ class RpcNetwork {
   static const String testnet = 'Testnet';
 
   static const List<String> labels = [mainnet, devnet, testnet];
-
+// 
   static const Map<String, String> rpcUrls = {
     mainnet:
         'https://solana-mainnet.api.syndica.io/api-key/3ZB8nwaToy52SC7swNrgP2hNMQY7JUvwRDaaoEum2AHJiaL3xPoKUXXLRfCJspgyoXFr6WphXyLhHcJqhiFVXRLKd2XbjRRP3ro',

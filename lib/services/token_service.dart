@@ -1,12 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:logging/logging.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 // Service to get token prices and symbols from coingecko
 
 class TokenService {
-  static final _log = Logger('TokenService');
-  
 
   static const String baseUrl = 'https://api.coingecko.com/api/v3';
 
@@ -43,7 +41,7 @@ class TokenService {
       return _priceCache?['solana'] ??
           0.0; // Return cached value if request fails
     } catch (e) {
-      _log.warning('Error fetching Solana price: $e');
+      logger.w('Error fetching Solana price: $e');
       return _priceCache?['solana'] ?? 0.0; // Return cached value on error
     }
   }
@@ -69,5 +67,37 @@ class TokenService {
     } catch (e) {
       throw Exception('Error loading prices: $e');
     }
+  }
+}
+
+class TokenCache {
+  static const Duration cacheDuration = Duration(minutes: 5);
+  static Map<String, dynamic> _cache = {};
+  static Map<String, DateTime> _cacheTimestamp = {};
+
+  static Future<T> getCachedData<T>(String key, Future<T> Function() fetchData) async {
+    final now = DateTime.now();
+    if (_cache.containsKey(key) && 
+        now.difference(_cacheTimestamp[key]!) < cacheDuration) {
+      logger.i('Cache hit for $key');
+      return _cache[key] as T;
+    }
+
+    logger.i('Cache miss for $key, fetching fresh data');
+    final data = await fetchData();
+    _cache[key] = data;
+    _cacheTimestamp[key] = now;
+    return data;
+  }
+
+  // Add these methods
+  static void clearCache() {
+    _cache.clear();
+    _cacheTimestamp.clear();
+  }
+
+  static void invalidateKey(String key) {
+    _cache.remove(key);
+    _cacheTimestamp.remove(key);
   }
 }

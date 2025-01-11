@@ -2,55 +2,51 @@ import 'package:solana/solana.dart';
 import 'package:solana/dto.dart';
 import '../models/my_tokens.dart';
 import '../services/metadata_service.dart';
-import 'package:logging/logging.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
+import 'package:ntv_flutter_wallet/services/token_service.dart';
 
 class WalletService {
-  final _log = Logger('WalletService');
+
   final SolanaClient client;
   
   WalletService({required this.client});
 
   Future<({List<Token> tokens, double solBalance})> getBalanceAndTokens(String publicKey) async {
-    try {
-      // Get SOL balance
-      final getBalance = await client.rpcClient
-          .getBalance(publicKey, commitment: Commitment.confirmed);
+    return TokenCache.getCachedData('balance_and_tokens_$publicKey', () async {
+      try {
+        final getBalance = await client.rpcClient
+            .getBalance(publicKey, commitment: Commitment.confirmed);
 
-      // Get token accounts
-      final filter = TokenAccountsFilter.byProgramId(
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-      );
+        final filter = TokenAccountsFilter.byProgramId(
+          'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+        );
 
-      final tokenAccounts = await client.rpcClient.getTokenAccountsByOwner(
-        publicKey,
-        filter,
-        encoding: Encoding.jsonParsed,
-        commitment: Commitment.confirmed,
-      );
+        final tokenAccounts = await client.rpcClient.getTokenAccountsByOwner(
+          publicKey,
+          filter,
+          encoding: Encoding.jsonParsed,
+          commitment: Commitment.confirmed,
+        );
 
-      final tokens = <Token>[];
-      final solBalance = getBalance.value.toDouble() / lamportsPerSol;
+        final tokens = <Token>[];
+        final solBalance = getBalance.value.toDouble() / lamportsPerSol;
 
-      // Add SOL token to list of SPL tokens with a balance in active wallet
-      tokens.add(Token(
-        mint: '11111111111111111111111111111111',
-        symbol: 'SOL',
-        name: 'Solana',
-        decimals: 4,
-        logoUri: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
-        amount: solBalance,
-      ));
+        tokens.add(Token(
+          mint: '11111111111111111111111111111111',
+          symbol: 'SOL',
+          name: 'Solana',
+          decimals: 4,
+          logoUri: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
+          amount: solBalance,
+        ));
 
-      
         await _processTokenAccounts(tokenAccounts.value, tokens);
-     
-
-      return (tokens: tokens, solBalance: solBalance);
-    } catch (e, stackTrace) {
-      _log.severe('Error in getBalanceAndTokens', e, stackTrace);
-      _log.severe('Stack trace:', null, stackTrace);
-      rethrow;
-    }
+        return (tokens: tokens, solBalance: solBalance);
+      } catch (e, stackTrace) {
+        logger.e('Error in getBalanceAndTokens', error: e, stackTrace: stackTrace);
+        rethrow;
+      }
+    });
   }
 
   Future<void> _processTokenAccounts(
@@ -67,7 +63,7 @@ class WalletService {
           }
         }
       } catch (e) {
-        _log.warning('Error processing token account: $e');
+        logger.e('Error processing token account: $e');
       }
     }
   }
@@ -96,7 +92,7 @@ class WalletService {
       final signature = await client.rpcClient.requestAirdrop(pubKey, lamports);
       return signature;
     } catch (e) {
-      _log.severe('Error in requestAirdrop: $e');
+      logger.e('Error in requestAirdrop: $e');
       rethrow;
     }
   }
