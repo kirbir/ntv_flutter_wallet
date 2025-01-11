@@ -47,6 +47,116 @@ class _SettingsViewState extends State<SettingsView> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 16),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                backgroundColor: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.focused
+                                    : AppColors.backgroundLight,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        'Customize Avatar',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            FluttermojiCircleAvatar(
+                                              backgroundColor: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.purpleSwagLight
+                                                      .withAlpha(50)
+                                                  : AppColors.primaryBlue
+                                                      .withAlpha(50),
+                                              radius: 50,
+                                            ),
+                                            const SizedBox(height: 16),
+                                            FluttermojiCustomizer(
+                                              theme: FluttermojiThemeData(
+                                                primaryBgColor:
+                                                    Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? AppColors.gray900
+                                                        : AppColors
+                                                            .backgroundLight,
+                                                secondaryBgColor:
+                                                    Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.transparent
+                                                        : AppColors.gray300,
+                                                labelTextStyle:
+                                                    Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? const TextStyle(
+                                                            color: Colors.white)
+                                                        : const TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                              ),
+                                              scaffoldWidth:
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.8,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: FluttermojiCircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.purpleSwagLight.withAlpha(50)
+                                  : AppColors.primaryBlue.withAlpha(50),
+                          radius: 50,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        'Tap to customize',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.textSecondary
+                                  : Colors.black54,
+                            ),
+                      ),
+                    ),
                     Text(
                       'Theme',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -58,20 +168,22 @@ class _SettingsViewState extends State<SettingsView> {
                         children: [
                           RadioListTile<ThemeMode>(
                             title: Text(
-                              themeMode.name.substring(0, 1).toUpperCase() + 
-                              themeMode.name.substring(1),
+                              themeMode.name.substring(0, 1).toUpperCase() +
+                                  themeMode.name.substring(1),
                             ),
                             value: themeMode,
                             groupValue: widget.controller.themeMode,
                             onChanged: widget.controller.updateThemeMode,
-                            activeColor: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.success
-                                : AppColors.primaryBlue,
+                            activeColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.success
+                                    : AppColors.primaryBlue,
                             controlAffinity: ListTileControlAffinity.trailing,
                           ),
-                          if (index < ThemeMode.values.length )
+                          if (index < ThemeMode.values.length)
                             Divider(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? AppColors.success.withAlpha(200)
                                   : Colors.black12,
                               height: 1,
@@ -82,42 +194,6 @@ class _SettingsViewState extends State<SettingsView> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'Avatar',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 16),
-                FluttermojiCircleAvatar(
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.purpleSwagLight.withAlpha(50)
-                          : AppColors.primaryBlue.withAlpha(50),
-                  radius: 50,
-                ),
-                const SizedBox(height: 16),
-                FluttermojiCustomizer(
-                  theme: FluttermojiThemeData(
-                    primaryBgColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.gray900
-                            : AppColors.backgroundLight,
-                    secondaryBgColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.transparent
-                            : AppColors.gray300,
-                    labelTextStyle:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? const TextStyle(color: Colors.white)
-                            : const TextStyle(color: Colors.black),
-                  ),
-                  scaffoldWidth: MediaQuery.of(context).size.width,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'RPC Server Configuration',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 16),
                 FutureBuilder<Map<String, String>>(
                   future: WebSocketService.getCustomRpcUrls(),
                   builder: (context, snapshot) {
@@ -126,62 +202,94 @@ class _SettingsViewState extends State<SettingsView> {
                     }
 
                     return Column(
-                      children: RpcNetwork.labels.map((network) {
-                        final customUrl = snapshot.data?[network];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: ExpansionTile(
-                            title: Text(network),
-                            subtitle: Text(
-                              customUrl ??
-                                  RpcNetwork.wsUrls[network] ??
-                                  'Not set',
-                              style: Theme.of(context).textTheme.bodySmall,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'RPC Server Configuration',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 16),
+                        ...RpcNetwork.labels.map((network) {
+                          final customUrl = snapshot.data?[network];
+                          final index = RpcNetwork.labels.indexOf(network);
+                          return Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: [
-                                    TextFormField(
-                                      initialValue: customUrl,
-                                      decoration: InputDecoration(
-                                        labelText: '$network WebSocket URL',
-                                        hintText: RpcNetwork.wsUrls[network],
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                      onFieldSubmitted: (value) async {
-                                        if (value.isEmpty) {
-                                          // Reset to default
-                                          await WebSocketService
-                                              .saveCustomRpcUrl(network,
-                                                  RpcNetwork.wsUrls[network]!);
-                                        } else {
-                                          await WebSocketService
-                                              .saveCustomRpcUrl(network, value);
-                                        }
-                                        setState(() {}); // Refresh the view
-                                      },
-                                    ),
-                                    const SizedBox(height: 8),
-                                    TextButton(
-                                      onPressed: () async {
-                                        await WebSocketService.saveCustomRpcUrl(
-                                            network,
-                                            RpcNetwork.wsUrls[network]!);
-                                        setState(() {}); // Refresh the view
-                                      },
-                                      child: const Text('Reset to Default'),
-                                    ),
-                                  ],
+                              ExpansionTile(
+                                title: Text(network),
+                                subtitle: Text(
+                                  customUrl ??
+                                      RpcNetwork.wsUrls[network] ??
+                                      'Not set',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
+                                    child: Column(
+                                      children: [
+                                        TextFormField(
+                                          initialValue: customUrl,
+                                          decoration: InputDecoration(
+                                            labelText: '$network WebSocket URL',
+                                            hintText:
+                                                RpcNetwork.wsUrls[network],
+                                          ),
+                                          onFieldSubmitted: (value) async {
+                                            if (value.isEmpty) {
+                                              await WebSocketService
+                                                  .saveCustomRpcUrl(
+                                                network,
+                                                RpcNetwork.wsUrls[network]!,
+                                              );
+                                            } else {
+                                              await WebSocketService
+                                                  .saveCustomRpcUrl(
+                                                      network, value);
+                                            }
+                                            setState(() {});
+                                          },
+                                        ),
+                                        const SizedBox(height: 16),
+                                        TextButton(
+                                          onPressed: () async {
+                                            await WebSocketService
+                                                .saveCustomRpcUrl(
+                                              network,
+                                              RpcNetwork.wsUrls[network]!,
+                                            );
+                                            setState(() {});
+                                          },
+                                          child: Text(
+                                            'Reset to Default',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.success
+                                                  : AppColors.primaryBlue,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
+                              if (index < RpcNetwork.labels.length)
+                                Divider(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.success.withAlpha(200)
+                                      : Colors.black12,
+                                  height: 1,
+                                ),
                             ],
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ],
                     );
                   },
                 ),
