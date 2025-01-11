@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+class PageTheme {
+  final EdgeInsets padding;
+  const PageTheme({
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+  });
+}
+
 class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
   final LinearGradient pageGradient;
   final Color? listTileBackground;
@@ -8,6 +15,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
   final Color? listTileTrailingColor;
   final BorderRadius? listTileBorderRadius;
   final EdgeInsets? listTileMargin;
+  final PageTheme pageTheme;
 
   CustomThemeExtension({
     required this.pageGradient,
@@ -17,6 +25,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
     this.listTileTrailingColor,
     this.listTileBorderRadius = const BorderRadius.all(Radius.circular(12)),
     this.listTileMargin = const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    this.pageTheme = const PageTheme(),
   });
 
   @override
@@ -37,6 +46,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
       listTileTrailingColor: listTileTrailingColor ?? this.listTileTrailingColor,
       listTileBorderRadius: listTileBorderRadius ?? this.listTileBorderRadius,
       listTileMargin: listTileMargin ?? this.listTileMargin,
+      pageTheme: this.pageTheme,
     );
   }
 
@@ -56,6 +66,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
       listTileTrailingColor: Color.lerp(listTileTrailingColor, other.listTileTrailingColor, t),
       listTileBorderRadius: BorderRadius.lerp(listTileBorderRadius, other.listTileBorderRadius, t),
       listTileMargin: EdgeInsets.lerp(listTileMargin, other.listTileMargin, t),
+      pageTheme: this.pageTheme,
     );
   }
 

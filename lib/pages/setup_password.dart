@@ -43,7 +43,8 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
           resizeToAvoidBottomInset: true,
           appBar: const CustomAppBar(showSettings: true, showLogo: true),
           body: Padding(
-            padding: const EdgeInsets.all(56),
+            padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
             child: Form(
               key: formKey,
               child: SingleChildScrollView(

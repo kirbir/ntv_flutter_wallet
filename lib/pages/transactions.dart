@@ -117,7 +117,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       elevation: 2,
                       child: Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

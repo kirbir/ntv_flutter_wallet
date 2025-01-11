@@ -7,6 +7,7 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/services/websocket_service.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -34,46 +35,51 @@ class _SettingsViewState extends State<SettingsView> {
         appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: Theme.of(context)
+                    .extension<CustomThemeExtension>()
+                    ?.pageTheme
+                    .padding ??
+                const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
-                  'Theme',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? const Color.fromARGB(255, 255, 255, 255)
-                          : AppColors.primaryBlue,
-                      width: 1,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Theme',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DropdownButton<ThemeMode>(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                    underline: Container(),
-                    value: widget.controller.themeMode,
-                    onChanged: widget.controller.updateThemeMode,
-                    items: const [
-                      DropdownMenuItem(
-                        value: ThemeMode.system,
-                        child: Text('System Theme'),
-                      ),
-                      DropdownMenuItem(
-                        value: ThemeMode.light,
-                        child: Text('Light Theme'),
-                      ),
-                      DropdownMenuItem(
-                        value: ThemeMode.dark,
-                        child: Text('Dark Theme'),
-                      )
-                    ],
-                  ),
+                    const SizedBox(height: 16),
+                    ...ThemeMode.values.map((themeMode) {
+                      final index = ThemeMode.values.indexOf(themeMode);
+                      return Column(
+                        children: [
+                          RadioListTile<ThemeMode>(
+                            title: Text(
+                              themeMode.name.substring(0, 1).toUpperCase() + 
+                              themeMode.name.substring(1),
+                            ),
+                            value: themeMode,
+                            groupValue: widget.controller.themeMode,
+                            onChanged: widget.controller.updateThemeMode,
+                            activeColor: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.success
+                                : AppColors.primaryBlue,
+                            controlAffinity: ListTileControlAffinity.trailing,
+                          ),
+                          if (index < ThemeMode.values.length )
+                            Divider(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.success.withAlpha(200)
+                                  : Colors.black12,
+                              height: 1,
+                            ),
+                        ],
+                      );
+                    }).toList(),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 Text(

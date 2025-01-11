@@ -54,7 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: const CustomAppBar(showSettings: true, showLogo: true),
         body: Padding(
-          padding: const EdgeInsets.all(56),
+          padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

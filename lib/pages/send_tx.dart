@@ -93,7 +93,8 @@ class _SendScreenState extends State<SendScreen> {
         body: _isLoading 
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

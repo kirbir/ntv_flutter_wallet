@@ -25,7 +25,8 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
         backgroundColor: Colors.transparent,
         appBar: const CustomAppBar( showSettings: true, showLogo: true),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

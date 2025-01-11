@@ -53,19 +53,16 @@ class AppTheme {
           fillColor: Colors.transparent,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+          border: UnderlineInputBorder(),
+          enabledBorder: UnderlineInputBorder(
+           
             borderSide: const BorderSide(color: AppColors.gray700),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.gray700),
-          ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: UnderlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: AppColors.success, width: 2),
           ),
-          errorBorder: OutlineInputBorder(
+          errorBorder: UnderlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: AppColors.error),
           ),
@@ -83,7 +80,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: Colors.white),
         scaffoldBackgroundColor: Colors.transparent,
         textTheme: const TextTheme(
-          titleLarge: TextStyle(color: AppColors.textPrimary),
+          titleLarge: TextStyle(color: AppColors.textPrimary,fontWeight: FontWeight.w800),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
         ),
@@ -109,6 +106,20 @@ class AppTheme {
             pageGradient: AppColors.pageGradient,
           ),
         ],
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return AppColors.success;
+            }
+            return AppColors.textSecondary;
+          }),
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return AppColors.success.withOpacity(0.2);
+            }
+            return Colors.transparent;
+          }),
+        ),
       );
 
 // L I GH T   T H E M E
@@ -149,32 +160,30 @@ class AppTheme {
 
         // Input decoration
         inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide:
-                BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
+          filled: false,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black54,
+            ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide:
-                BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
+          enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black54,
+            ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide:
-                const BorderSide(color: AppColors.primaryBlue, width: 2),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black,
+              width: 2,
+            ),
           ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.error),
+          errorBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: AppColors.error),
           ),
-          labelStyle: const TextStyle(color: AppColors.gray700),
-          hintStyle: const TextStyle(color: AppColors.gray500),
-          floatingLabelStyle: const TextStyle(color: AppColors.primaryBlue),
+          labelStyle: const TextStyle(color: Colors.black87),
+          hintStyle: const TextStyle(color: Colors.black54),
+          floatingLabelStyle: const TextStyle(color: Colors.black),
         ),
 
         // Color scheme
@@ -182,11 +191,9 @@ class AppTheme {
           primary: AppColors.primaryBlue,
           secondary: AppColors.secondaryBlue,
           surface: AppColors.surfaceLight,
-          background: AppColors.backgroundLight,
           onPrimary: Colors.white,
           onSecondary: Colors.white,
           onSurface: AppColors.gray900,
-          onBackground: AppColors.gray900,
         ),
 
         // Text theme
@@ -201,7 +208,7 @@ class AppTheme {
           ),
           titleLarge: TextStyle(
             color: AppColors.gray800,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w800,
           ),
           bodyLarge: TextStyle(color: AppColors.gray800),
           bodyMedium: TextStyle(color: AppColors.gray700),
@@ -234,5 +241,19 @@ class AppTheme {
             pageGradient: AppColors.lightThemeGradient,
           ),
         ],
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return AppColors.primaryBlue;
+            }
+            return Colors.black54;
+          }),
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return AppColors.primaryBlue.withOpacity(0.2);
+            }
+            return Colors.transparent;
+          }),
+        ),
       );
 }

@@ -77,7 +77,8 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
                 ],
               ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
+      ?? const EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
