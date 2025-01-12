@@ -181,7 +181,7 @@ class _SettingsViewState extends State<SettingsView> {
                             ),
                         ],
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -280,7 +280,7 @@ class _SettingsViewState extends State<SettingsView> {
                                 ),
                             ],
                           );
-                        }).toList(),
+                        }),
                       ],
                     );
                   },

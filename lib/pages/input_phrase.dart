@@ -81,8 +81,8 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
                             hintText: '${index + 1}',
                             hintStyle: TextStyle(
                               color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white.withOpacity(0.5)
-                                  : Colors.black.withOpacity(0.5),
+                                  ? Colors.white.withAlpha(128)
+                                  : Colors.black.withAlpha(128),
                             ),
                           ),
                           style: Theme.of(context).textTheme.labelMedium,

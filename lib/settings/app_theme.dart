@@ -108,15 +108,15 @@ class AppTheme {
           ),
         ],
         radioTheme: RadioThemeData(
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
               return AppColors.success;
             }
             return AppColors.textSecondary;
           }),
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return AppColors.success.withOpacity(0.2);
+          overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.success.withAlpha(51);
             }
             return Colors.transparent;
           }),
@@ -243,15 +243,15 @@ class AppTheme {
           ),
         ],
         radioTheme: RadioThemeData(
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
               return AppColors.primaryBlue;
             }
             return Colors.black54;
           }),
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return AppColors.primaryBlue.withOpacity(0.2);
+          overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.primaryBlue.withAlpha(51);
             }
             return Colors.transparent;
           }),

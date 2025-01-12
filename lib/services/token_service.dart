@@ -72,8 +72,8 @@ class TokenService {
 
 class TokenCache {
   static const Duration cacheDuration = Duration(minutes: 5);
-  static Map<String, dynamic> _cache = {};
-  static Map<String, DateTime> _cacheTimestamp = {};
+  static final Map<String, dynamic> _cache = {};
+  static final Map<String, DateTime> _cacheTimestamp = {};
 
   static Future<T> getCachedData<T>(String key, Future<T> Function() fetchData) async {
     final now = DateTime.now();

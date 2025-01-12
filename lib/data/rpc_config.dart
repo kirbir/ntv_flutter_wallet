@@ -1,4 +1,3 @@
-import 'package:ntv_flutter_wallet/services/websocket_service.dart';
 
 class RpcNetwork {
   static const String mainnet = 'Mainnet';

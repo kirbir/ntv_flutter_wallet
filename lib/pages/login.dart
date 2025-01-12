@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:fluttermoji/fluttermoji.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -129,8 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(validationFailed ? 'Invalid Password' : '',
                               style: const TextStyle(color: Colors.red)),
                           const SizedBox(height: 8),
-                          Container(
-                            height: 120,
+                          SizedBox(
+                            height: 80,
                             child: Column(
                               children: [
                                 Expanded(

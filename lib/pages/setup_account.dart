@@ -4,24 +4,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logging/logging.dart';
-import 'package:fluttermoji/fluttermoji.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
 import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
   final String username = '';
 
-  SetupScreen({super.key, required this.isLoggedIn});
+  const SetupScreen({super.key, required this.isLoggedIn});
 
   @override
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  final _log = Logger('SetupAccount');
-
   bool _userExists = false;
   String _lastLogin = '';
 
@@ -43,21 +39,23 @@ class _SetupScreenState extends State<SetupScreen> {
       setState(() {
         _userExists = true;
         _lastLogin = username;
-        _log.info('User does exist: $username');
+        logger.i('User does exist: $username');
       });
     } else {
       setState(() {
         _userExists = false;
-        _log.info('No user exists');
+        logger.i('No user exists');
       });
     }
 
     if (password != null && widget.isLoggedIn) {
-      if (!mounted) return;
-      context.push('/login');
-    } else {}
+      if (context.mounted) () => context.push('/login');
+    } else {
+      return;
+    }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -68,16 +66,19 @@ class _SetupScreenState extends State<SetupScreen> {
         appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: Center(
           child: Padding(
-            padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
-      ?? const EdgeInsets.all(16),
+            padding: Theme.of(context)
+                    .extension<CustomThemeExtension>()
+                    ?.pageTheme
+                    .padding ??
+                const EdgeInsets.all(16),
             child: Column(
               spacing: 4,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 34),
-            
+
                 _userExists == true
-                    ? GlowingAvatar(
+                    ? const GlowingAvatar(
                         radius: 50,
                       )
                     : const Icon(Icons.account_circle, size: 100),
@@ -110,8 +111,8 @@ class _SetupScreenState extends State<SetupScreen> {
                       ],
                     ),
                     child: ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 4),
                       leading: Icon(
                         Icons.login,
                         color: Theme.of(context)
@@ -301,10 +302,10 @@ class _SetupScreenState extends State<SetupScreen> {
                         if (demoPhrase != null) {
                           context.push('/passwordSetup/$demoPhrase');
                         } else {
-                          _log.severe('DEMO_PHRASE not found in .env file');
+                          logger.e('DEMO_PHRASE not found in .env file');
                         }
                       } catch (e) {
-                        _log.severe('Failed to load .env file', e);
+                        logger.e('Failed to load .env file', error: e);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:

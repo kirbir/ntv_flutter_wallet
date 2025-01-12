@@ -46,7 +46,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
       listTileTrailingColor: listTileTrailingColor ?? this.listTileTrailingColor,
       listTileBorderRadius: listTileBorderRadius ?? this.listTileBorderRadius,
       listTileMargin: listTileMargin ?? this.listTileMargin,
-      pageTheme: this.pageTheme,
+      pageTheme: pageTheme,
     );
   }
 
@@ -66,7 +66,7 @@ class CustomThemeExtension extends ThemeExtension<CustomThemeExtension> {
       listTileTrailingColor: Color.lerp(listTileTrailingColor, other.listTileTrailingColor, t),
       listTileBorderRadius: BorderRadius.lerp(listTileBorderRadius, other.listTileBorderRadius, t),
       listTileMargin: EdgeInsets.lerp(listTileMargin, other.listTileMargin, t),
-      pageTheme: this.pageTheme,
+      pageTheme: pageTheme,
     );
   }
 

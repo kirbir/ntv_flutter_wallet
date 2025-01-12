@@ -70,15 +70,15 @@ class WalletService {
 
   Future<void> _processTokenData(TokenAccountData tokenData, List<Token> tokens) async {
     final info = tokenData.info;
-    if (info?.mint == null || info?.tokenAmount == null) return;
+    // if (info?.mint == null || info?.tokenAmount == null) return;
 
-    final amount = double.tryParse(info!.tokenAmount!.uiAmountString ?? '0') ?? 0.0;
+    final amount = double.tryParse(info.tokenAmount.uiAmountString ?? '0') ?? 0.0;
     if (amount <= 0) return;
 
-    final metadata = await TokenMetadataService.getTokenMetadata(info.mint!);
+    final metadata = await TokenMetadataService.getTokenMetadata(info.mint);
     
     tokens.add(Token(
-      mint: info.mint!,
+      mint: info.mint,
       symbol: metadata['symbol'] ?? 'Unknown',
       name: metadata['name'],
       decimals: metadata['decimals'],

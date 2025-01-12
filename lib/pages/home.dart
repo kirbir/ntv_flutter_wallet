@@ -30,8 +30,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
- 
-
   String? _publicKey;
 
   SolanaClient? client;
@@ -91,14 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Load wallet address first as it's required
       await _loadWalletAddress();
-      
-      // Load these in parallel
-      // final results = await Future.wait([
-      //   TokenCache.getCachedData('client_init', () => _initializeClient(currentNetwork)),
-      //   TokenCache.getCachedData('connection', () => _checkConnection()),
-      //   TokenCache.getCachedData('prices', () => _loadPrices()),
-      // ]);
-
+      await _loadPrices().then(
+        (_) => _getBalance(),
+      );
+      await _checkConnection();
       logger.i('Startup completed successfully');
     } catch (e) {
       logger.e('Error during startup: $e');
@@ -132,10 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: FluttermojiCircleAvatar(
                           radius: 26,
-                          backgroundColor: Theme.of(context).brightness == Brightness.dark
-                                          ? AppColors.purpleSwagLight.withAlpha(50)
-                                          : AppColors.primaryBlue.withAlpha(50),
-                                        
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.purpleSwagLight.withAlpha(50)
+                                  : AppColors.primaryBlue.withAlpha(50),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -208,25 +202,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               )
                             : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                    _currencyFormatter.format(totalBalanceInUsd),
-                                    style:
-                                        Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold,fontFamily: GoogleFonts.montserrat().fontFamily),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    _currencyFormatter
+                                        .format(totalBalanceInUsd),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: GoogleFonts.montserrat()
+                                                .fontFamily),
                                   ),
-                                     Text('USD', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: GoogleFonts.montserrat().fontFamily),textAlign: TextAlign.end,),
-                              ],
-                            ),
-                           
+                                  Text(
+                                    'USD',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                            fontFamily: GoogleFonts.montserrat()
+                                                .fontFamily),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ],
+                              ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16,),
+              const SizedBox(
+                height: 16,
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -238,31 +248,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton.outlined(
                           icon: const Icon(Icons.send_to_mobile),
-                          onPressed: ()  {
-                           context.push('/send_tx');
+                          onPressed: () {
+                            context.push('/send_tx');
                           },
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.success
                               : AppColors.primaryBlue,
                           iconSize: 28,
                         ),
-                         Text('Send', style: Theme.of(context).textTheme.bodySmall),
+                        Text('Send',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
-                    
                     Column(
                       spacing: 4,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton.outlined(
                           icon: const Icon(Icons.refresh),
-                          onPressed: _getBalance,
+                          onPressed: () async {
+                            _loadPrices().then(
+                              (_) => _getBalance(),
+                            );
+                          },
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.success
                               : AppColors.primaryBlue,
                           iconSize: 28,
                         ),
-                         Text('Refresh', style: Theme.of(context).textTheme.bodySmall),
+                        Text('Refresh',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                     if (currentNetwork == 'Devnet')
@@ -275,31 +290,56 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               final signature = await _walletService
                                   .requestAirdrop(_publicKey!, lamportsPerSol);
+                              await _loadPrices().then(
+                                (_) => _getBalance(),
+                              );
                               logger.d('Airdrop requested: $signature');
-                              if (signature.isNotEmpty) {
-                                _getBalance();
-                              } else {
-                                logger.e('Airdrop request failed');
-                                if (!context.mounted) return;
+                              if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text('Airdrop request failed. Airdrops per day are limited on devnet.'),
+                                    content: const Text(
+                                        '1 SOL Airdrop request completed.'),
                                     action: SnackBarAction(
                                       label: 'Close',
                                       onPressed: () {
-                                        Navigator.pop(context);  // Close the snackbar
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar(); // Close the snackbar
                                       },
                                     ),
                                   ),
                                 );
                               }
+                              if (signature.isNotEmpty) {
+                                await _loadPrices().then(
+                                  (_) => _getBalance(),
+                                );
+                              } else {
+                                logger.e('Airdrop request failed');
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                          'Airdrop request failed. Airdrops per day are limited on devnet.'),
+                                      action: SnackBarAction(
+                                        label: 'Close',
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context)
+                                              .hideCurrentSnackBar(); // Close the snackbar
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
                             },
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.success
-                                : AppColors.primaryBlue,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.success
+                                    : AppColors.primaryBlue,
                             iconSize: 28,
                           ),
-                           Text('Airdrop', style: Theme.of(context).textTheme.bodySmall),
+                          Text('Airdrop',
+                              style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                     Column(
@@ -310,7 +350,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: const Icon(Icons.copy),
                           onPressed: () {
                             if (_publicKey != null) {
-                              Clipboard.setData(ClipboardData(text: _publicKey!));
+                              Clipboard.setData(
+                                  ClipboardData(text: _publicKey!));
                             }
                           },
                           color: Theme.of(context).brightness == Brightness.dark
@@ -318,7 +359,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               : AppColors.primaryBlue,
                           iconSize: 28,
                         ),
-                         Text('Copy', style: Theme.of(context).textTheme.bodySmall),
+                        Text('Copy',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ],
@@ -345,34 +387,34 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 children: [
                   ..._myTokens.map((token) => Slidable(
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {},
-                          icon: Icons.directions_transit_filled,
-                          label: 'Send',
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {},
+                              icon: Icons.directions_transit_filled,
+                              label: 'Send',
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Container(
+                        child: Container(
                           margin: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? const Color.fromARGB(44, 202, 203, 255)
-                                : AppColors.cardLight,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromARGB(44, 202, 203, 255)
+                                    : AppColors.cardLight,
                             borderRadius: BorderRadius.circular(12),
-                            border: Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? null
-                                : Border.all(
-                                    color: AppColors.primaryBlue,
-                                    width: 1,
-                                  ),
+                            border:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? null
+                                    : Border.all(
+                                        color: AppColors.primaryBlue,
+                                        width: 1,
+                                      ),
                           ),
                           child: ListTile(
                             leading: token.logoUri != null
@@ -428,11 +470,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                  )),
+                      )),
                 ],
               ),
               // #endregion
-              
+
               // Trending Coins section
               const SizedBox(height: 24),
               Center(
@@ -461,80 +503,90 @@ class _HomeScreenState extends State<HomeScreen> {
                     return const Text('No trending coins available');
                   } else {
                     return Column(
-                      children: snapshot.data!.map((coin) => Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? const Color.fromARGB(44, 202, 203, 255)
-                                  : AppColors.cardLight,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Theme.of(context).brightness == Brightness.dark
-                                  ? null
-                                  : Border.all(
-                                      color: AppColors.primaryBlue,
-                                      width: 1,
-                                    ),
-                            ),
-                            child: ListTile(
-                              leading: coin['logoURI'] != null
-                                  ? Image.network(
-                                      coin['logoURI'],
-                                      width: 24,
-                                      height: 24,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Icon(
-                                        Icons.trending_up,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : AppColors.primaryBlue,
+                      children: snapshot.data!
+                          .map((coin) => Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? const Color.fromARGB(44, 202, 203, 255)
+                                      : AppColors.cardLight,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? null
+                                      : Border.all(
+                                          color: AppColors.primaryBlue,
+                                          width: 1,
+                                        ),
+                                ),
+                                child: ListTile(
+                                  leading: coin['logoURI'] != null
+                                      ? Image.network(
+                                          coin['logoURI'],
+                                          width: 24,
+                                          height: 24,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Icon(
+                                            Icons.trending_up,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : AppColors.primaryBlue,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.trending_up,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : AppColors.primaryBlue,
+                                        ),
+                                  title: Text(
+                                    coin['symbol'] ?? 'N/A',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        coin['price'] != null
+                                            ? '\$${coin['price'].toStringAsFixed(4)}'
+                                            : 'N/A',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
-                                    )
-                                  : Icon(
-                                      Icons.trending_up,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : AppColors.primaryBlue,
-                                    ),
-                              title: Text(
-                                coin['symbol'] ?? 'N/A',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    coin['price'] != null
-                                        ? '\$${coin['price'].toStringAsFixed(4)}'
-                                        : 'N/A',
-                                    style: Theme.of(context).textTheme.bodyMedium,
+                                      Text(
+                                        '24H Volume: ${coin['dailyVolume'] ?? 'N/A'}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ],
                                   ),
-
-                                  Text(
-                                    '24H Volume: ${coin['dailyVolume'] ?? 'N/A'}',
-                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.swap_horiz),
+                                    onPressed: () {
+                                      final url = coin['swapLink'];
+                                      launchUrl(Uri.parse(url));
+                                    },
                                   ),
-                                ],
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.swap_horiz),
-                                onPressed: () {
-                                  final url = coin['swapLink'];
-                                  launchUrl(Uri.parse(url));
-                                },
-                              ),
-                            ),
-                          )).toList(),
+                                ),
+                              ))
+                          .toList(),
                     );
                   }
                 },
@@ -562,7 +614,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initializeClient(String network) async {
     try {
       logger.i('Initializing client for $network');
-      
+
       // Clear all cache when network changes
       TokenCache.clearCache();
 
@@ -606,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         throw Exception('Node is unhealthy');
       }
-    } on HttpException catch (e, s) {
+    } on HttpException catch (e) {
       logger.e('Error checking connection: $e');
       setState(() {
         _isHealthy = false;
@@ -620,7 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
       logger.i('Solana price: \$$solanaPrice');
 
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
-  
+
       logger.i('Got ${prices.length} prices from API');
 
       setState(() {
@@ -650,8 +702,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       logger.i('Token Symbol: ${token.symbol.toLowerCase()}');
       logger.i('Token Amount in wallet: ${token.amount}');
-      logger.i('Token Price: \$${tokenUsdPrice}');
-      logger.i('Token Total Value: \$${tokenTotalValue}');
+      logger.i('Token Price: \$$tokenUsdPrice');
+      logger.i('Token Total Value: \$$tokenTotalValue');
       logger.i('SOLTotal: $solBalance');
     }
 

@@ -161,86 +161,89 @@ class _SendScreenState extends State<SendScreen> {
                     textAlign: TextAlign.left,
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        final recipientAddress = addressController.text;
-                        final amount = double.parse(amountController.text);
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              final recipientAddress = addressController.text;
+                              final amount = double.parse(amountController.text);
+                              
+                              if (recipientAddress.isEmpty || amount <= 0) {
+                                throw Exception('Invalid input');
+                              }
                         
-                        if (recipientAddress.isEmpty || amount <= 0) {
-                          throw Exception('Invalid input');
-                        }
-
-                        final prefs = await SharedPreferences.getInstance();
-                        final mnemonic = prefs.getString('mnemonic');
-                        if (mnemonic == null) throw Exception('No wallet found');
+                              final prefs = await SharedPreferences.getInstance();
+                              final mnemonic = prefs.getString('mnemonic');
+                              if (mnemonic == null) throw Exception('No wallet found');
+                              
+                              final senderKeypair = await Ed25519HDKeyPair.fromMnemonic(mnemonic);
+                              final recipient = Ed25519HDPublicKey.fromBase58(recipientAddress);
                         
-                        final senderKeypair = await Ed25519HDKeyPair.fromMnemonic(mnemonic);
-                        final recipient = Ed25519HDPublicKey.fromBase58(recipientAddress);
-
-                        late SignedTx signedTx;
+                              late SignedTx signedTx;
+                              
+                              if (selectedToken?.symbol.toUpperCase() == 'SOL') {
+                                // SOL transfer
+                                final lamports = (amount * lamportsPerSol).toInt();
+                                final instruction = SystemInstruction.transfer(
+                                  fundingAccount: senderKeypair.publicKey,
+                                  recipientAccount: recipient,
+                                  lamports: lamports,
+                                );
+                                final message = Message(instructions: [instruction]);
+                                final latestBlockhash = await _client!.rpcClient.getLatestBlockhash();
+                                final compiledMessage = message.compile(
+                                  recentBlockhash: latestBlockhash.value.blockhash,
+                                  feePayer: senderKeypair.publicKey,
+                                );
+                                signedTx = SignedTx(
+                                  compiledMessage: compiledMessage,
+                                  signatures: [await senderKeypair.sign(compiledMessage.toByteArray())],
+                                );
+                              } else {
+                                // Token transfer
+                                throw Exception('Token transfers not yet implemented');
+                              }
                         
-                        if (selectedToken?.symbol.toUpperCase() == 'SOL') {
-                          // SOL transfer
-                          final lamports = (amount * lamportsPerSol).toInt();
-                          final instruction = SystemInstruction.transfer(
-                            fundingAccount: senderKeypair.publicKey,
-                            recipientAccount: recipient,
-                            lamports: lamports,
-                          );
-                          final message = Message(instructions: [instruction]);
-                          final latestBlockhash = await _client!.rpcClient.getLatestBlockhash();
-                          final compiledMessage = message.compile(
-                            recentBlockhash: latestBlockhash.value.blockhash,
-                            feePayer: senderKeypair.publicKey,
-                          );
-                          signedTx = SignedTx(
-                            compiledMessage: compiledMessage,
-                            signatures: [await senderKeypair.sign(compiledMessage.toByteArray())],
-                          );
-                        } else {
-                          // Token transfer
-                          throw Exception('Token transfers not yet implemented');
-                        }
-
-                        final signature = await _client!.rpcClient.sendTransaction(
-                          signedTx.encode(),
-                          preflightCommitment: Commitment.confirmed,
-                        );
-
-                        if (!context.mounted) return;
+                              final signature = await _client!.rpcClient.sendTransaction(
+                                signedTx.encode(),
+                                preflightCommitment: Commitment.confirmed,
+                              );
                         
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Transaction sent! Signature: ${signature.substring(0, 8)}...'),
-                            action: SnackBarAction(
-                              label: 'View',
-                              onPressed: () {
-                                context.push('/transactions');  // Navigate to transactions page
-                              },
-                            ),
-                          ),
-                        );
-
-                        // Clear input fields
-                        addressController.clear();
-                        amountController.clear();
-
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(200, 50),
-                    ),
-                    child: const Text('Send'),
+                              if (!context.mounted) return;
+                              
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Transaction sent! Signature: ${signature.substring(0, 8)}...'),
+                                  action: SnackBarAction(
+                                    label: 'View',
+                                    onPressed: () {
+                                      context.push('/transactions');  // Navigate to transactions page
+                                    },
+                                  ),
+                                ),
+                              );
+                        
+                              // Clear input fields
+                              addressController.clear();
+                              amountController.clear();
+                        
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text('send'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
