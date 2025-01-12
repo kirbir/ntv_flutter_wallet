@@ -20,6 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ntv_flutter_wallet/services/websocket_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,12 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
     decimalDigits: 2,
   );
 
-  Timer? _priceRefreshTimer;
+  // Timer? _priceRefreshTimer;
 
   @override
   void initState() {
     super.initState();
-    startup();
+    didChangeDependencies();
 
     // Set up timer for price refresh every 15 seconds
     // _priceRefreshTimer = Timer.periodic(
@@ -70,8 +71,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeClient(currentNetwork).then((_) {
+      if (mounted && client != null) {
+        _walletService = WalletService(client: client!);
+        startup();
+      }
+    });
+  }
+
+  @override
   void dispose() {
-    _priceRefreshTimer?.cancel();
+    // _priceRefreshTimer?.cancel();
     super.dispose();
   }
 
@@ -81,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
       await _loadWalletAddress();
       
       // Load these in parallel
-      final results = await Future.wait([
-        TokenCache.getCachedData('client_init', () => _initializeClient(currentNetwork)),
-        TokenCache.getCachedData('connection', () => _checkConnection()),
-        TokenCache.getCachedData('prices', () => _loadPrices()),
-      ]);
+      // final results = await Future.wait([
+      //   TokenCache.getCachedData('client_init', () => _initializeClient(currentNetwork)),
+      //   TokenCache.getCachedData('connection', () => _checkConnection()),
+      //   TokenCache.getCachedData('prices', () => _loadPrices()),
+      // ]);
 
       logger.i('Startup completed successfully');
     } catch (e) {
@@ -195,12 +207,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               )
-                            : Text(
-                                _currencyFormatter.format(totalBalanceInUsd),
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              Text('USD', style: Theme.of(context).textTheme.bodySmall),
+                            : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                    _currencyFormatter.format(totalBalanceInUsd),
+                                    style:
+                                        Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold,fontFamily: GoogleFonts.montserrat().fontFamily),
+                                  ),
+                                     Text('USD', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: GoogleFonts.montserrat().fontFamily),textAlign: TextAlign.end,),
+                              ],
+                            ),
+                           
                       ],
                     ),
                   ],
@@ -256,8 +276,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               final signature = await _walletService
                                   .requestAirdrop(_publicKey!, lamportsPerSol);
                               logger.d('Airdrop requested: $signature');
-
-                              _getBalance();
+                              if (signature.isNotEmpty) {
+                                _getBalance();
+                              } else {
+                                logger.e('Airdrop request failed');
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Airdrop request failed. Airdrops per day are limited on devnet.'),
+                                    action: SnackBarAction(
+                                      label: 'Close',
+                                      onPressed: () {
+                                        Navigator.pop(context);  // Close the snackbar
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }
                             },
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.success

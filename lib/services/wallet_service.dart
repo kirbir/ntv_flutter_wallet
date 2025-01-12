@@ -90,10 +90,11 @@ class WalletService {
   Future <String> requestAirdrop(String pubKey, int lamports) async {
     try {
       final signature = await client.rpcClient.requestAirdrop(pubKey, lamports);
+      logger.d('Airdrop requested: ${signature.toString()}');
       return signature;
     } catch (e) {
       logger.e('Error in requestAirdrop: $e');
-      rethrow;
+      return '';
     }
   }
 }
