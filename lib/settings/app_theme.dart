@@ -11,21 +11,22 @@ class AppTheme {
         // E L E V A T E D - B U T T O N
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
+            textStyle:  TextStyle(fontSize: 18,letterSpacing: 1.2),
             shape: RoundedRectangleBorder(
 
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(24),
             ),
-            backgroundColor: AppColors.purpleSwag,
+            backgroundColor: AppColors.success.withAlpha(100),
             foregroundColor: Colors.white,
             shadowColor: const Color.fromARGB(255, 51, 49, 36),
-            elevation: 5,
+            elevation: 4,
           ),
         ),
           outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-             side: const BorderSide(color: AppColors.purpleSwag, width: 2,style: BorderStyle.solid),
+             side:  BorderSide(color: AppColors.success.withAlpha(100), width: 2,style: BorderStyle.solid),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(24),
              
             ),
             // backgroundColor: const Color.fromARGB(255, 122, 53, 118),
@@ -44,8 +45,8 @@ class AppTheme {
           ),
         ),
         primarySwatch: Colors.grey,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.surfaceDark,
+        appBarTheme:  AppBarTheme(
+          backgroundColor: Colors.transparent,
           foregroundColor: AppColors.textPrimary,
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -56,10 +57,10 @@ class AppTheme {
           border: UnderlineInputBorder(),
           enabledBorder: UnderlineInputBorder(
            
-            borderSide: const BorderSide(color: AppColors.gray700),
+            borderSide:  BorderSide(color: AppColors.success),
           ),
           focusedBorder: UnderlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            
             borderSide: const BorderSide(color: AppColors.success, width: 2),
           ),
           errorBorder: UnderlineInputBorder(
@@ -70,7 +71,7 @@ class AppTheme {
           hintStyle: const TextStyle(color: AppColors.textSecondary),
           floatingLabelStyle: const TextStyle(color: AppColors.purpleSwagLight),
           alignLabelWithHint: true,
-          floatingLabelAlignment: FloatingLabelAlignment.center,
+          floatingLabelAlignment: FloatingLabelAlignment.start,
         ),
         brightness: Brightness.dark,
         canvasColor: AppColors.surfaceDark,
@@ -79,8 +80,8 @@ class AppTheme {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         scaffoldBackgroundColor: Colors.transparent,
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(color: AppColors.textPrimary,fontWeight: FontWeight.w800),
+        textTheme:  TextTheme(
+          titleLarge: TextStyle(color: AppColors.textPrimary,fontWeight: FontWeight.w800,fontFamily: GoogleFonts.montserrat().fontFamily),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
         ),

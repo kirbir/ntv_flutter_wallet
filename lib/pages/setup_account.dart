@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
@@ -64,7 +65,7 @@ class _SetupScreenState extends State<SetupScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: true, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: Center(
           child: Padding(
             padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
@@ -76,11 +77,8 @@ class _SetupScreenState extends State<SetupScreen> {
                 const SizedBox(height: 34),
             
                 _userExists == true
-                    ? FluttermojiCircleAvatar(
-                        backgroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.purpleSwagLight.withAlpha(50)
-                                : AppColors.primaryBlue.withAlpha(50),
+                    ? GlowingAvatar(
+                        radius: 50,
                       )
                     : const Icon(Icons.account_circle, size: 100),
                 const SizedBox(

@@ -41,8 +41,8 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color.fromARGB(255, 10, 96, 113),
-      Color.fromARGB(184, 54, 5, 127),
+      Color.fromARGB(255, 87, 37, 74),
+      Color.fromARGB(184, 8, 68, 78),
     ],
   );
 

@@ -5,6 +5,7 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: true, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: Padding(
           padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
       ?? const EdgeInsets.all(16),
@@ -68,19 +69,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   //   ),
 
                   // ),
-                  FluttermojiCircleAvatar(
-                    backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.purpleSwagLight.withAlpha(50)
-                  : AppColors.primaryBlue.withAlpha(50),
+                  const GlowingAvatar(
+              
                     radius: 60,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   Container(
                     
-                    alignment: Alignment.center,
+                    // alignment: Alignment.center,
                     child: (username != null) ? Text(
                       'Welcome ${username!}',
-                      textAlign: TextAlign.center,
+                      // textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge,
                     ) : const SizedBox.shrink(),
                   ),
@@ -95,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: passwordController,
                             obscureText: _isObscured,
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.start,
                             decoration: InputDecoration(
                                     // prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
@@ -110,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                               hintText: 'Enter your password',
                               floatingLabelAlignment:
-                                  FloatingLabelAlignment.center,
+                                  FloatingLabelAlignment.start,
                               border: const OutlineInputBorder(),
                             ),
                             validator: (value) {

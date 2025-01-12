@@ -87,7 +87,7 @@ class _SendScreenState extends State<SendScreen> {
         backgroundColor: Colors.transparent,
         appBar: const CustomAppBar(
 
-          showSettings: true,
+          showSettings: false,
           showLogo: true,
         ),
         body: _isLoading 

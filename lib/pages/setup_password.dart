@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:logging/logging.dart';
-
+import 'package:fluttermoji/fluttermoji.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/services/logging_service.dart';
+import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 // Page where the user set's his Account name and password
 
 class SetupPasswordScreen extends StatefulWidget {
@@ -20,7 +22,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final usernameController = TextEditingController();
-  final _log = Logger('SetupPassword');
+  
   bool _isObscured = true;
 
   @override
@@ -41,7 +43,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
         ),
         child: Scaffold(
           resizeToAvoidBottomInset: true,
-          appBar: const CustomAppBar(showSettings: true, showLogo: true),
+          appBar: const CustomAppBar(showSettings: false, showLogo: true),
           body: Padding(
             padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
       ?? const EdgeInsets.all(16),
@@ -50,6 +52,63 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    Center(
+                      child: GlowingAvatar(
+                        radius: 50,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.gray900
+                                    : AppColors.backgroundLight,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        'Customize Avatar',
+                                        style: Theme.of(context).textTheme.titleLarge,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: SingleChildScrollView(
+                                        child: FluttermojiCustomizer(
+                                          theme: FluttermojiThemeData(
+                                            primaryBgColor: Theme.of(context).brightness == Brightness.dark
+                                                ? AppColors.gray900
+                                                : AppColors.backgroundLight,
+                                            secondaryBgColor: Theme.of(context).brightness == Brightness.dark
+                                                ? Colors.transparent
+                                                : AppColors.gray300,
+                                            labelTextStyle: Theme.of(context).brightness == Brightness.dark
+                                                ? const TextStyle(color: Colors.white)
+                                                : const TextStyle(color: Colors.black),
+                                          ),
+                                          scaffoldWidth: MediaQuery.of(context).size.width * 0.8,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24,),
                     Text(
                       'Account name',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -59,8 +118,8 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                       controller: usernameController,
                       autofocus: true,
                       decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.person),
-                        hintText: '',
+                        suffixIcon: Icon(Icons.person), 
+                        hintText: 'Account name',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
@@ -80,7 +139,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                         controller: passwordController,
                         obscureText: _isObscured,
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.lock),
+                          
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
@@ -104,7 +163,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                         controller: confirmPasswordController,
                         obscureText: _isObscured,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.lock),
+                          
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
@@ -116,7 +175,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                                 : const Icon(Icons.visibility_off),
                           ),
                           hintText: 'Confirm password',
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -169,7 +228,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
   }
 
   void _validate() {
-    _log.info("Validating password");
+    logger.i("Validating password");
     // rest of the validation code
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PageTheme {
   final EdgeInsets padding;
   const PageTheme({
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 24),
   });
 }
 

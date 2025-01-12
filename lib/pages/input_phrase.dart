@@ -23,7 +23,7 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const CustomAppBar( showSettings: true, showLogo: true),
+        appBar: const CustomAppBar( showSettings: false, showLogo: true),
         body: SingleChildScrollView(
           padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
       ?? const EdgeInsets.all(16),
@@ -101,12 +101,19 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
                     style: TextStyle(color: Colors.red),
                   ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => _onSubmit(context),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50),
-                  ),
-                  child: const Text('Continue'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _onSubmit(context),
+                       
+                          style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 26),
+                        ),
+                        child: const Text('Continue'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -7,7 +7,7 @@ import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/services/websocket_service.dart';
 import 'package:ntv_flutter_wallet/data/rpc_config.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -75,14 +75,7 @@ class _SettingsViewState extends State<SettingsView> {
                                       child: SingleChildScrollView(
                                         child: Column(
                                           children: [
-                                            FluttermojiCircleAvatar(
-                                              backgroundColor: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? AppColors.purpleSwagLight
-                                                      .withAlpha(50)
-                                                  : AppColors.primaryBlue
-                                                      .withAlpha(50),
+                                            const GlowingAvatar(
                                               radius: 50,
                                             ),
                                             const SizedBox(height: 16),
@@ -136,11 +129,8 @@ class _SettingsViewState extends State<SettingsView> {
                             },
                           );
                         },
-                        child: FluttermojiCircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.purpleSwagLight.withAlpha(50)
-                                  : AppColors.primaryBlue.withAlpha(50),
+                        child: const GlowingAvatar(
+                          
                           radius: 50,
                         ),
                       ),
@@ -157,6 +147,7 @@ class _SettingsViewState extends State<SettingsView> {
                             ),
                       ),
                     ),
+                    const SizedBox(height: 24,),
                     Text(
                       'Theme',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -204,6 +195,7 @@ class _SettingsViewState extends State<SettingsView> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 24,),
                         Text(
                           'RPC Server Configuration',
                           style: Theme.of(context).textTheme.titleLarge,

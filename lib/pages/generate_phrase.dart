@@ -51,7 +51,7 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: true, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: Column(
           children: [
             if (_showBanner)
@@ -59,15 +59,16 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
                 padding: const EdgeInsets.all(16),
                 content: const Text(
                   'Important! Write down the recovery phrase and keep in a secure location. Do not share it with anyone! If you lose it, you will not be able to recover your account.',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(height: 1.8),
                 ),
                 backgroundColor: const Color.fromARGB(255, 95, 37, 36),
                 leading: const Icon(Icons.warning_amber_rounded,
                     color: Colors.white),
                 contentTextStyle: const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  
                 ),
+               
                 actions: [
                   TextButton(
                     onPressed: () => setState(() => _showBanner = false),
@@ -75,6 +76,14 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
                         style: TextStyle(color: Colors.white)),
                   ),
                 ],
+              ),
+            if (!_showBanner) 
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Image.asset(
+                  'assets/images/safe.gif',
+                  height: 100, // Adjust size as needed
+                ),
               ),
             Padding(
               padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
@@ -174,16 +183,25 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _copied
-                        ? () {
-                            GoRouter.of(context)
-                                .push("/passwordSetup/$_mnemonic");
-                          }
-                        : () {
-                            GoRouter.of(context).push("/");
-                          },
-                    child: Text(_copied ? 'Continue' : 'Go Back'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 26),
+                          ),
+                          onPressed: _copied
+                              ? () {
+                                  GoRouter.of(context)
+                                      .push("/passwordSetup/$_mnemonic");
+                                }
+                              : () {
+                                  GoRouter.of(context).push("/");
+                                },
+                          child: Text(_copied ? 'Continue' : 'Go Back'),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                 ],
