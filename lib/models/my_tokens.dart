@@ -1,4 +1,5 @@
 
+// Token model for the wallet
 class Token {
   final String mint;
   final String symbol;

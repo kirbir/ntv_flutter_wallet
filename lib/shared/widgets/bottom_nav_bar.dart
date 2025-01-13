@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/core/theme/app_colors.dart';
 
 
 class BottomNavBar extends StatelessWidget {

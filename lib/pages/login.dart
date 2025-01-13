@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
-import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/core/theme/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/glowing_avatar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -63,23 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  // Center(
-                  //   child: Image.asset(
-                  //     'assets/images/Viking.png',
-                  //     width: 200,
-                  //   ),
-
-                  // ),
                   const GlowingAvatar(
                     radius: 60,
                   ),
                   const SizedBox(height: 32),
                   Container(
-                    // alignment: Alignment.center,
                     child: (username != null)
                         ? Text(
                             'Welcome ${username!}',
-                            // textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleLarge,
                           )
                         : const SizedBox.shrink(),
@@ -97,7 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _isObscured,
                             textAlign: TextAlign.start,
                             decoration: InputDecoration(
-                              // prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -137,7 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 20),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 20),
                                       ),
                                       onPressed: _onSubmit,
                                       child: const Text('Login'),
@@ -151,11 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Expanded(
                                     child: OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 20),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 20),
                                       ),
                                       onPressed: () =>
                                           _onDifferentAccountPressed(context),
-                                          
                                       child:
                                           const Text('Use different Account'),
                                     ),

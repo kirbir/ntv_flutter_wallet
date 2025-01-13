@@ -70,7 +70,7 @@ class WalletService {
 
   Future<void> _processTokenData(TokenAccountData tokenData, List<Token> tokens) async {
     final info = tokenData.info;
-    // if (info?.mint == null || info?.tokenAmount == null) return;
+
 
     final amount = double.tryParse(info.tokenAmount.uiAmountString ?? '0') ?? 0.0;
     if (amount <= 0) return;
@@ -87,6 +87,7 @@ class WalletService {
     ));
   }
 
+// Airdrop button in home page calls this function if user is on devnet
   Future <String> requestAirdrop(String pubKey, int lamports) async {
     try {
       final signature = await client.rpcClient.requestAirdrop(pubKey, lamports);

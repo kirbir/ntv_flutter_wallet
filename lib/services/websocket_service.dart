@@ -2,7 +2,7 @@ import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:ntv_flutter_wallet/core/config/rpc_config.dart';
 
 
 

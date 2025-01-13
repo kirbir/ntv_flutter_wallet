@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ntv_flutter_wallet/data/rpc_config.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:ntv_flutter_wallet/core/config/rpc_config.dart';
+import 'package:ntv_flutter_wallet/core/theme/app_colors.dart';
 
 class RpcSelector extends StatefulWidget {
   final String currentNetwork;

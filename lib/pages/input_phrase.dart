@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
-import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/core/theme/custom_theme_extension.dart';
 class InputPhraseScreen extends StatefulWidget {
   const InputPhraseScreen({super.key});
 
@@ -108,7 +108,7 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
                         onPressed: () => _onSubmit(context),
                        
                           style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 26),
+                                    padding: const EdgeInsets.symmetric(vertical: 20),
                         ),
                         child: const Text('Continue'),
                       ),

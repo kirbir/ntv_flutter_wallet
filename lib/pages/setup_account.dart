@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
-import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
-import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/core/theme/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
-import 'package:ntv_flutter_wallet/widgets/glowing_image.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/glowing_image.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
@@ -104,7 +102,7 @@ class _SetupScreenState extends State<SetupScreen> {
                       ),
                       
                     ),
-                    SizedBox(height: 8,),
+                    const SizedBox(height: 8,),
                   ],
                 ),
                 // if there is a user stored in memory, show option to login

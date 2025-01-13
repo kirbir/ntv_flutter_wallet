@@ -5,7 +5,7 @@ import 'dart:convert';
 class SettingsService {
   Future<ThemeMode> themeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt('themeMode') ?? 0;
+    final themeIndex = prefs.getInt('themeMode') ?? 2;
     return ThemeMode.values[themeIndex];
   }
 

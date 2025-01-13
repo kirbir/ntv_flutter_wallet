@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ntv_flutter_wallet/widgets/rpc_selector.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/rpc_selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solana/solana.dart';
 import 'package:ntv_flutter_wallet/services/token_service.dart';
 import 'package:ntv_flutter_wallet/models/my_tokens.dart';
-import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:ntv_flutter_wallet/core/config/rpc_config.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/core/theme/custom_theme_extension.dart';
 import 'package:ntv_flutter_wallet/services/wallet_service.dart';
 import 'package:intl/intl.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
-import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
+import 'package:ntv_flutter_wallet/core/theme/app_colors.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/bottom_nav_bar.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'dart:async';
 import 'package:ntv_flutter_wallet/services/metadata_service.dart';
@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _coinPrices.isEmpty
                             ? Shimmer.fromColors(
                                 baseColor: Colors.transparent,
-                                highlightColor: AppColors.purpleSwagLight!,
+                                highlightColor: AppColors.purpleSwagLight,
                                 child: Container(
                                   width: 120,
                                   height: 30,

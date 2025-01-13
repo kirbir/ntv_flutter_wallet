@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
-import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
+import 'package:ntv_flutter_wallet/core/theme/custom_theme_extension.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/custom_app_bar.dart';
 import 'package:solana/solana.dart';
-import 'package:ntv_flutter_wallet/widgets/bottom_nav_bar.dart';
+import 'package:ntv_flutter_wallet/shared/widgets/bottom_nav_bar.dart';
 import 'package:ntv_flutter_wallet/models/my_tokens.dart';
 import 'package:ntv_flutter_wallet/services/wallet_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ntv_flutter_wallet/data/rpc_config.dart';
+import 'package:ntv_flutter_wallet/core/config/rpc_config.dart';
 import 'package:solana/encoder.dart' show SignedTx;
 import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';

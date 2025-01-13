@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ntv_flutter_wallet/settings/settings_view.dart';
 import 'settings/settings_service.dart';
 import 'settings/settings_controller.dart';
-import 'settings/app_theme.dart';
+import 'core/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/pages/generate_phrase.dart';
 import 'package:ntv_flutter_wallet/pages/home.dart';

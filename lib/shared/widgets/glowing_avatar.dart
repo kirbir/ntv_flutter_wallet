@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:ntv_flutter_wallet/settings/app_colors.dart';
+import 'package:fluttermoji/fluttermoji.dart';
+import 'package:ntv_flutter_wallet/core/theme/app_colors.dart';
 
-class GlowingImage extends StatefulWidget {
-  final double size;
-  final String imagePath;
+class GlowingAvatar extends StatefulWidget {
+  final double radius;
   final VoidCallback? onTap;
 
-  const GlowingImage({
+  const GlowingAvatar({
     super.key,
-    this.size = 100,
-    required this.imagePath,
+    this.radius = 50,
     this.onTap,
   });
 
   @override
-  State<GlowingImage> createState() => _GlowingImageState();
+  State<GlowingAvatar> createState() => _GlowingAvatarState();
 }
 
-class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderStateMixin {
+class _GlowingAvatarState extends State<GlowingAvatar> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -75,19 +74,11 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
             ),
             child: Padding(
               padding: const EdgeInsets.all(2.0),
-              child: CircleAvatar(
-                radius: widget.size / 2,
+              child: FluttermojiCircleAvatar(
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.purpleSwagLight.withAlpha(50)
                     : AppColors.primaryBlue.withAlpha(50),
-                child: ClipOval(
-                  child: Image.asset(
-                    widget.imagePath,
-                    width: widget.size,
-                    height: widget.size,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                radius: widget.radius,
               ),
             ),
           );

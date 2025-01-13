@@ -47,6 +47,7 @@ class TokenService {
   }
 
   // Get multiple coin prices
+  // This was intented for the price_ticker widget, but it's not used anymore
    static Future<Map<String, double>> getTopCoinsPrices() async {
     try {
       final response = await http.get(Uri.parse(
