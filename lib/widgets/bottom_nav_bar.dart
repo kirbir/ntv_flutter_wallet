@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 
+
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
 
@@ -13,9 +14,12 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
+      backgroundColor: Colors.black.withAlpha(130),
+      indicatorShape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 20,
        indicatorColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.success
-          : AppColors.primaryBlue,
+          ? AppColors.success.withAlpha(150)
+          : AppColors.primaryBlue.withAlpha(150),
       selectedIndex: selectedIndex,
       onDestinationSelected: (int index) {
         switch (index) {

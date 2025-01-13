@@ -76,14 +76,12 @@ class _SetupScreenState extends State<SetupScreen> {
               spacing: 4,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 34),
+                const SizedBox(height: 24),
 
-                _userExists == true
-                    ? const GlowingImage(
-                        imagePath: 'assets/images/logo_medium.png',
-                        size: 100,
-                      )
-                    : const Icon(Icons.account_circle, size: 100),
+                const GlowingImage(
+                  imagePath: 'assets/images/logo_medium.png',
+                  size: 100,
+                ),
                 const SizedBox(
                   height: 34,
                 ),
@@ -99,12 +97,14 @@ class _SetupScreenState extends State<SetupScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.only(left: 8, right: 50),
                       child: Text(
-                        'This is a an experimental crypto wallet app. I recommend using the DEMO wallet to test the app. There you have a wallet with some SOL and stablecoins to play with.',
+                        'This is a an experimental crypto wallet. I recommend using the DEMO wallet on Devnet to test the app. There you have a wallet with some SOL and Stablecoins to play with.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                      
                     ),
+                    SizedBox(height: 8,),
                   ],
                 ),
                 // if there is a user stored in memory, show option to login
@@ -154,7 +154,7 @@ class _SetupScreenState extends State<SetupScreen> {
                         ],
                       ),
                       title: Text(
-                        'Login as $_lastLogin',
+                        'Login as $_lastLogin', // If user exists in storage, show login option for that user
                         style: TextStyle(
                           color: Theme.of(context)
                               .extension<CustomThemeExtension>()
@@ -173,7 +173,69 @@ class _SetupScreenState extends State<SetupScreen> {
                     ),
                   ),
                 ],
-                const SizedBox(height: 8),
+                // const SizedBox(height: 8),
+                              Container(
+                  margin: Theme.of(context)
+                      .extension<CustomThemeExtension>()
+                      ?.listTileMargin,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileBackground,
+                    borderRadius: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.listTileBorderRadius,
+                    border: Border.all(
+                      color: const Color.fromRGBO(158, 158, 158, 0.2),
+                      width: 1,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.05),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.add_box_outlined,
+                          color: Theme.of(context)
+                              .extension<CustomThemeExtension>()
+                              ?.listTileIconColor,
+                          size: 24,
+                        ),
+                        const VerticalDivider(
+                          endIndent: 10,
+                          indent: 10,
+                          color: Color.fromRGBO(158, 158, 158, 0.2),
+                        )
+                      ],
+                    ),
+                    title: Text(
+                      'Create new wallet',
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .extension<CustomThemeExtension>()
+                            ?.listTileTitleColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Theme.of(context)
+                          .extension<CustomThemeExtension>()
+                          ?.listTileTrailingColor,
+                    ),
+                    onTap: () => context.push('/generatePhrase'),
+                  ),
+                ),
                 Container(
                   margin: Theme.of(context)
                       .extension<CustomThemeExtension>()
@@ -236,7 +298,8 @@ class _SetupScreenState extends State<SetupScreen> {
                     onTap: () => context.push('/inputphrase'),
                   ),
                 ),
-                const SizedBox(height: 8),
+
+  
                 Container(
                   margin: Theme.of(context)
                       .extension<CustomThemeExtension>()
@@ -249,70 +312,7 @@ class _SetupScreenState extends State<SetupScreen> {
                         .extension<CustomThemeExtension>()
                         ?.listTileBorderRadius,
                     border: Border.all(
-                      color: const Color.fromRGBO(158, 158, 158, 0.2),
-                      width: 1,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.05),
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.account_balance_wallet,
-                          color: Theme.of(context)
-                              .extension<CustomThemeExtension>()
-                              ?.listTileIconColor,
-                          size: 24,
-                        ),
-                        const VerticalDivider(
-                          endIndent: 10,
-                          indent: 10,
-                          color: Color.fromRGBO(158, 158, 158, 0.2),
-                        )
-                      ],
-                    ),
-                    title: Text(
-                      'Create new wallet',
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .extension<CustomThemeExtension>()
-                            ?.listTileTitleColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Theme.of(context)
-                          .extension<CustomThemeExtension>()
-                          ?.listTileTrailingColor,
-                    ),
-                    onTap: () => context.push('/generatePhrase'),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  margin: Theme.of(context)
-                      .extension<CustomThemeExtension>()
-                      ?.listTileMargin,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .extension<CustomThemeExtension>()
-                        ?.listTileBackground,
-                    borderRadius: Theme.of(context)
-                        .extension<CustomThemeExtension>()
-                        ?.listTileBorderRadius,
-                    border: Border.all(
-                      color: const Color.fromRGBO(158, 158, 158, 0.2),
+                      color: const Color.fromARGB(51, 14, 255, 231),
                       width: 1,
                     ),
                     boxShadow: const [
@@ -361,18 +361,15 @@ class _SetupScreenState extends State<SetupScreen> {
                     ),
                     onTap: () {
                       try {
-                        final demoPhrase = dotenv.env['DEMO_PHRASE'];
-                        if (demoPhrase != null) {
+                        const demoPhrase = 'artwork luggage rough loop cream write omit clog nose arch effort custom';
                           context.push('/passwordSetup/$demoPhrase');
-                        } else {
-                          logger.e('DEMO_PHRASE not found in .env file');
-                        }
+                    
                       } catch (e) {
-                        logger.e('Failed to load .env file', error: e);
+                        logger.e('Failed to load demo wallet', error: e);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:
-                                Text('Failed to load .env file, error is: $e'),
+                                Text('Failed to load Demo Wallet, error is: $e'),
                             duration: const Duration(seconds: 3),
                           ),
                         );

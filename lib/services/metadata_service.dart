@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 class TokenMetadataService {
-
   // Jupiter API endpoint for token metadata
   static const String _jupiterApiUrl = 'https://token.jup.ag/all';
 
@@ -25,15 +24,13 @@ class TokenMetadataService {
       'logoURI':
           'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', // Using mainnet USDC logo
     },
-        'GCRaxtuxSybvBCYtwT45DCNm2sXP4SKrowhQ1TPabE1': {
+    'GCRaxtuxSybvBCYtwT45DCNm2sXP4SKrowhQ1TPabE1': {
       'symbol': 'EURO-e',
       'name': 'EURO-e Coin (Devnet)',
       'decimals': 0,
       'logoURI':
           'https://dev.euroe.com/img/logo.svg', // Using mainnet USDC logo
     },
-
-    
   };
 
   // Cache the token list to avoid multiple API calls
@@ -50,8 +47,7 @@ class TokenMetadataService {
           _tokenListCache = {
             for (var token in tokens) token['address'] as String: token
           };
-          logger.i(
-              'Loaded ${_tokenListCache?.length} tokens from Jupiter API');
+          logger.i('Loaded ${_tokenListCache?.length} tokens from Jupiter API');
         } else {
           throw Exception('Failed to load token list');
         }
@@ -90,33 +86,46 @@ class TokenMetadataService {
     }
   }
 
+  static Future<double> getSolPrice() async {
+    final response = await http.get(Uri.parse(
+        'https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112&showExtraInfo=true'));
+    final data = jsonDecode(response.body);
+    double solPrice = double.parse(
+        data['data']['So11111111111111111111111111111111111111112']['price']);
+        logger.e('solana price from metadata_service: \$$solPrice');
+    return solPrice;
+  }
+
   Future<List<Map<String, dynamic>>> getTrendingCoins() async {
     try {
       // Fetch trending coins from Birdeye.so
-      final response = await http.get(Uri.parse('https://tokens.jup.ag/tokens?tags=birdeye-trending&limit=10'));
+      final response = await http.get(Uri.parse(
+          'https://tokens.jup.ag/tokens?tags=birdeye-trending&limit=10'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        
 
         // Extract addresses and fetch prices
         final addressList = data.map((coin) => coin['address']).join(',');
-        
-        final priceResponse = await http.get(Uri.parse('https://api.jup.ag/price/v2?ids=$addressList&showExtraInfo=true'));
-        if (priceResponse.statusCode == 200) {
 
+        final priceResponse = await http.get(Uri.parse(
+            'https://api.jup.ag/price/v2?ids=$addressList&showExtraInfo=true'));
+        if (priceResponse.statusCode == 200) {
           // Fetch price data and format it
           final priceData = jsonDecode(priceResponse.body)['data'];
 
           return data.map((coin) {
             final address = coin['address'];
             final priceInfo = priceData[address];
-            final dailyVolume = coin['daily_volume'] != null ? (coin['daily_volume'] as num).toDouble() : 0.0;
+            final dailyVolume = coin['daily_volume'] != null
+                ? (coin['daily_volume'] as num).toDouble()
+                : 0.0;
 
             return {
               'symbol': coin['symbol'],
               'name': coin['name'],
               'logoURI': coin['logoURI'],
-              'price': priceInfo != null ? double.parse(priceInfo['price']) : null,
+              'price':
+                  priceInfo != null ? double.parse(priceInfo['price']) : null,
               'dailyVolume': _formatVolume(dailyVolume), // Format volume
               'swapLink': 'https://jup.ag/swap/SOL-$address',
             };

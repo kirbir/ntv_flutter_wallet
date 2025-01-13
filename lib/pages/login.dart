@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: false, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: false),
         body: Padding(
           padding: Theme.of(context)
                   .extension<CustomThemeExtension>()
@@ -136,6 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Expanded(
                                     child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 20),
+                                      ),
                                       onPressed: _onSubmit,
                                       child: const Text('Login'),
                                     ),
@@ -147,8 +150,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Expanded(
                                     child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 20),
+                                      ),
                                       onPressed: () =>
                                           _onDifferentAccountPressed(context),
+                                          
                                       child:
                                           const Text('Use different Account'),
                                     ),

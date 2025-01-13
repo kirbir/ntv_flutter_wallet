@@ -181,6 +181,9 @@ class _SendScreenState extends State<SendScreen> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                          ),
                           onPressed: () async {
                             try {
                               final recipientAddress = addressController.text;

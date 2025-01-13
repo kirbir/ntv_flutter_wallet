@@ -43,7 +43,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
         ),
         child: Scaffold(
           resizeToAvoidBottomInset: true,
-          appBar: const CustomAppBar(showSettings: false, showLogo: true),
+          appBar: const CustomAppBar(showSettings: false, showLogo: false),
           body: Padding(
             padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
       ?? const EdgeInsets.all(16),
@@ -53,59 +53,73 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                 child: Column(
                   children: [
                     Center(
-                      child: GlowingAvatar(
-                        radius: 50,
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.gray900
-                                    : AppColors.backgroundLight,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        'Customize Avatar',
-                                        style: Theme.of(context).textTheme.titleLarge,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: SingleChildScrollView(
-                                        child: FluttermojiCustomizer(
-                                          theme: FluttermojiThemeData(
-                                            primaryBgColor: Theme.of(context).brightness == Brightness.dark
-                                                ? AppColors.gray900
-                                                : AppColors.backgroundLight,
-                                            secondaryBgColor: Theme.of(context).brightness == Brightness.dark
-                                                ? Colors.transparent
-                                                : AppColors.gray300,
-                                            labelTextStyle: Theme.of(context).brightness == Brightness.dark
-                                                ? const TextStyle(color: Colors.white)
-                                                : const TextStyle(color: Colors.black),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GlowingAvatar(
+                            radius: 50,
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                        ? const Color.fromARGB(255, 94, 86, 101)
+                                        : AppColors.backgroundLight,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Text(
+                                            'Customize Avatar',
+                                            style: Theme.of(context).textTheme.titleLarge,
                                           ),
-                                          scaffoldWidth: MediaQuery.of(context).size.width * 0.8,
                                         ),
-                                      ),
+                                        Flexible(
+                                          child: SingleChildScrollView(
+                                            child: FluttermojiCustomizer(
+                                              theme: FluttermojiThemeData(
+                                                primaryBgColor: Theme.of(context).brightness == Brightness.dark
+                                                    ? AppColors.gray900
+                                                    : AppColors.backgroundLight,
+                                                secondaryBgColor: Theme.of(context).brightness == Brightness.dark
+                                                    ? Colors.transparent
+                                                    : AppColors.gray300,
+                                                labelTextStyle: Theme.of(context).brightness == Brightness.dark
+                                                    ? const TextStyle(color: Colors.white)
+                                                    : const TextStyle(color: Colors.black),
+                                              ),
+                                              scaffoldWidth: MediaQuery.of(context).size.width * 0.8,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Save'),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Save'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tap to customize',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withAlpha(128)
+                                  : Colors.black.withAlpha(128),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24,),
@@ -193,7 +207,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 26),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                             ),
                             onPressed: _submit,
                             child: const Text('Submit'),

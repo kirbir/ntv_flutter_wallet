@@ -10,13 +10,12 @@ import 'package:ntv_flutter_wallet/pages/input_phrase.dart';
 import 'package:ntv_flutter_wallet/pages/login.dart';
 import 'package:ntv_flutter_wallet/pages/setup_account.dart';
 import 'package:ntv_flutter_wallet/pages/setup_password.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/pages/transactions.dart';
 import 'package:ntv_flutter_wallet/pages/send_tx.dart';
+import 'package:flutter/services.dart';
 // import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 void main() async {
-
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());
@@ -25,15 +24,10 @@ void main() async {
   // This prevents a sudden theme change when the app is first displayed.
   WidgetsFlutterBinding.ensureInitialized();
   await settingsController.loadSettings();
-  await dotenv.load(fileName: "assets/.env");
-
-
-  
-  runApp(
-    MyApp(
-      settingsController: settingsController,
-    ), 
-  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(MyApp(settingsController: settingsController));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -51,13 +45,12 @@ class MyApp extends StatelessWidget {
     GoRoute(
         path: '/setup',
         builder: (context, state) {
-           final isLoggedIn = state.extra as bool? ?? false;
-          return  SetupScreen(isLoggedIn: isLoggedIn);
+          final isLoggedIn = state.extra as bool? ?? false;
+          return SetupScreen(isLoggedIn: isLoggedIn);
         }),
     GoRoute(
         path: '/inputPhrase',
         builder: (context, state) {
-         
           return const InputPhraseScreen();
         }),
     GoRoute(

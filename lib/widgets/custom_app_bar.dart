@@ -62,15 +62,15 @@ class _CustomAppBarState extends State<CustomAppBar> with SingleTickerProviderSt
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
                       const Color.fromARGB(255, 255, 255, 255).withAlpha((_animation.value * 255).toInt()),
-                      const Color.fromARGB(255, 255, 1, 213).withAlpha((_animation.value * 255).toInt()),
+                      const Color.fromARGB(255, 0, 225, 255).withAlpha((_animation.value * 255).toInt()),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
                   child: Image.asset(
-                    'assets/images/cyber_logo.png',
-                    height: 30,
-                    color: Colors.white,
+                    'assets/images/logo_medium.png',
+                    height: 40,
+                    color: const Color.fromARGB(255, 6, 243, 255),
                     colorBlendMode: BlendMode.modulate,
                   ),
                 );

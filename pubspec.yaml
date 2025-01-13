@@ -38,4 +38,4 @@ flutter:
   generate: true
   assets:
     - assets/images/
-    - assets/.env
+    - assets/images/logo_medium.png

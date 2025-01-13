@@ -32,7 +32,7 @@ class _SettingsViewState extends State<SettingsView> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: false, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: false),
         body: SingleChildScrollView(
           child: Padding(
             padding: Theme.of(context)

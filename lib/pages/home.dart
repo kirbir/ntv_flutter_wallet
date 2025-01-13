@@ -610,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoadingTokens = false;
       });
     } catch (e) {
-      logger.e('Error getting balance: $e');
+      logger.e('Using cached balance: $e');
       setState(() => _isHealthy = false);
     }
   }
@@ -637,10 +637,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
-
+// Load prices from Jupiter API using my metadata service
   Future<void> _loadPrices() async {
     try {
-      double solanaPrice = await TokenService.getSolanaPrice();
+      double solanaPrice = await TokenMetadataService.getSolPrice();
       logger.i('Solana price: \$$solanaPrice');
 
       Map<String, double> prices = await TokenService.getTopCoinsPrices();
