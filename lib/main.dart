@@ -13,7 +13,7 @@ import 'package:ntv_flutter_wallet/pages/setup_password.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ntv_flutter_wallet/pages/transactions.dart';
 import 'package:ntv_flutter_wallet/pages/send_tx.dart';
-import 'package:logger/logger.dart';
+// import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 void main() async {
 
@@ -40,7 +40,6 @@ class MyApp extends StatelessWidget {
   MyApp({super.key, required this.settingsController});
 
   final SettingsController settingsController;
-  final log = Logger();
 
   // #region Router
   late final GoRouter _router = GoRouter(routes: <GoRoute>[
@@ -117,6 +116,7 @@ class MyApp extends StatelessWidget {
           themeMode: settingsController.themeMode,
           debugShowCheckedModeBanner: false,
           routerConfig: _router,
+          supportedLocales: const [Locale('en', 'US'), Locale('en', 'IS')],
         );
       },
     );

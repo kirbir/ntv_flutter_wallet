@@ -97,7 +97,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: ActionChip (
-                
+                backgroundColor: Colors.transparent,
                 label: const Text('View Solscan.io'),
                 onPressed: () async  => await launchUrl(Uri.parse(_solscanUrl),),
                 avatar: const Icon(Icons.search),
@@ -131,14 +131,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                     children: [
                                       Icon(
                                         tx.err == null ? Icons.check_circle : Icons.error,
-                                        color: tx.err == null ? Colors.green : Colors.red,
+                                        color: tx.err == null ? AppColors.success : Colors.red,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         tx.err == null ? 'Success' : 'Failed',
                                         style: TextStyle(
-                                          color: tx.err == null ? Colors.green : Colors.red,
+                                          color: tx.err == null ? AppColors.success : Colors.red,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),

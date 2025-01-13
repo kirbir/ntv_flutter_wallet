@@ -93,7 +93,7 @@ class TokenMetadataService {
   Future<List<Map<String, dynamic>>> getTrendingCoins() async {
     try {
       // Fetch trending coins from Birdeye.so
-      final response = await http.get(Uri.parse('https://tokens.jup.ag/tokens?tags=birdeye-trending'));
+      final response = await http.get(Uri.parse('https://tokens.jup.ag/tokens?tags=birdeye-trending&limit=10'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         

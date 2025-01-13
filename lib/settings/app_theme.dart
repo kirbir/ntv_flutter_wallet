@@ -38,7 +38,7 @@ class AppTheme {
         ),
         // C A R D S
         cardTheme: CardTheme(
-          color: const Color.fromARGB(255, 35, 49, 46),
+          color: Colors.black.withAlpha(50),
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -83,7 +83,7 @@ class AppTheme {
         textTheme:  TextTheme(
           titleLarge: TextStyle(color: AppColors.textPrimary,fontWeight: FontWeight.w800,fontFamily: GoogleFonts.montserrat().fontFamily),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
-          bodyMedium: TextStyle(color: AppColors.textSecondary),
+          bodyMedium: TextStyle(color: AppColors.textSecondary,fontSize: 16,height: 1.5),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.surfaceDark,

@@ -12,7 +12,12 @@ import 'package:go_router/go_router.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
 
 class SendScreen extends StatefulWidget {
-  const SendScreen({super.key});
+  final Token? preSelectedToken;
+  
+  const SendScreen({
+    super.key, 
+    this.preSelectedToken,
+  });
 
   @override
   State<SendScreen> createState() => _SendScreenState();
@@ -31,7 +36,13 @@ class _SendScreenState extends State<SendScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeData();
+    _initializeData().then((_) {
+      if (widget.preSelectedToken != null) {
+        setState(() {
+          selectedToken = widget.preSelectedToken;
+        });
+      }
+    });
   }
 
   Future<void> _initializeData() async {
@@ -67,7 +78,11 @@ class _SendScreenState extends State<SendScreen> {
       
       setState(() {
         _availableTokens = result.tokens;
-        selectedToken = _availableTokens.isNotEmpty ? _availableTokens.first : null;
+        selectedToken = widget.preSelectedToken != null 
+            ? _availableTokens.firstWhere(
+                (t) => t.mint == widget.preSelectedToken!.mint,
+                orElse: () => _availableTokens.first)
+            : _availableTokens.first;
         _isLoading = false;
       });
       logger.i('Initialization complete');
@@ -130,6 +145,7 @@ class _SendScreenState extends State<SendScreen> {
                           ),
                         );
                       }).toList(),
+                      
                       onChanged: (Token? newValue) {
                         setState(() {
                           selectedToken = newValue;

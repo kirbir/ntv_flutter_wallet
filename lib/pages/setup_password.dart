@@ -188,6 +188,7 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
                         }),
                     const SizedBox(height: 16),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(
                           child: ElevatedButton(

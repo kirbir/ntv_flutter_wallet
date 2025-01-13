@@ -53,8 +53,11 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: const CustomAppBar(showSettings: false, showLogo: true),
         body: Padding(
-          padding: Theme.of(context).extension<CustomThemeExtension>()?.pageTheme.padding 
-      ?? const EdgeInsets.all(16),
+          padding: Theme.of(context)
+                  .extension<CustomThemeExtension>()
+                  ?.pageTheme
+                  .padding ??
+              const EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,18 +71,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // ),
                   const GlowingAvatar(
-              
                     radius: 60,
                   ),
                   const SizedBox(height: 32),
                   Container(
-                    
                     // alignment: Alignment.center,
-                    child: (username != null) ? Text(
-                      'Welcome ${username!}',
-                      // textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ) : const SizedBox.shrink(),
+                    child: (username != null)
+                        ? Text(
+                            'Welcome ${username!}',
+                            // textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 16),
                   Form(
@@ -94,17 +97,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _isObscured,
                             textAlign: TextAlign.start,
                             decoration: InputDecoration(
-                                    // prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isObscured =! _isObscured;
-                            });
-                          },
-                          icon: _isObscured
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                        ),
+                              // prefixIcon: const Icon(Icons.lock),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscured = !_isObscured;
+                                  });
+                                },
+                                icon: _isObscured
+                                    ? const Icon(Icons.visibility)
+                                    : const Icon(Icons.visibility_off),
+                              ),
                               hintText: 'Enter your password',
                               floatingLabelAlignment:
                                   FloatingLabelAlignment.start,
@@ -127,41 +130,32 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(validationFailed ? 'Invalid Password' : '',
                               style: const TextStyle(color: Colors.red)),
                           const SizedBox(height: 8),
-                          SizedBox(
-                            height: 80,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    width: double.infinity,
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
                                     child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                      ),
                                       onPressed: _onSubmit,
                                       child: const Text('Login'),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Expanded(
-                                  child: SizedBox(
-                                    width: double.infinity,
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
                                     child: OutlinedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                      ),
                                       onPressed: () =>
                                           _onDifferentAccountPressed(context),
                                       child:
                                           const Text('Use different Account'),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             width: 8,

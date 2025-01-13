@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ntv_flutter_wallet/settings/app_colors.dart';
 import 'package:ntv_flutter_wallet/widgets/custom_app_bar.dart';
 import 'package:ntv_flutter_wallet/settings/custom_theme_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ntv_flutter_wallet/services/logging_service.dart';
-import 'package:ntv_flutter_wallet/widgets/glowing_avatar.dart';
+import 'package:ntv_flutter_wallet/widgets/glowing_image.dart';
 
 class SetupScreen extends StatefulWidget {
   final bool isLoggedIn;
@@ -63,7 +64,7 @@ class _SetupScreenState extends State<SetupScreen> {
             Theme.of(context).extension<CustomThemeExtension>()?.pageGradient,
       ),
       child: Scaffold(
-        appBar: const CustomAppBar(showSettings: false, showLogo: true),
+        appBar: const CustomAppBar(showSettings: false, showLogo: false),
         body: Center(
           child: Padding(
             padding: Theme.of(context)
@@ -78,12 +79,33 @@ class _SetupScreenState extends State<SetupScreen> {
                 const SizedBox(height: 34),
 
                 _userExists == true
-                    ? const GlowingAvatar(
-                        radius: 50,
+                    ? const GlowingImage(
+                        imagePath: 'assets/images/logo_medium.png',
+                        size: 100,
                       )
                     : const Icon(Icons.account_circle, size: 100),
                 const SizedBox(
                   height: 34,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Welcome',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'This is a an experimental crypto wallet app. I recommend using the DEMO wallet to test the app. There you have a wallet with some SOL and stablecoins to play with.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
                 ),
                 // if there is a user stored in memory, show option to login
                 if (_userExists) ...[
@@ -112,13 +134,24 @@ class _SetupScreenState extends State<SetupScreen> {
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 4),
-                      leading: Icon(
-                        Icons.login,
-                        color: Theme.of(context)
-                            .extension<CustomThemeExtension>()
-                            ?.listTileIconColor,
-                        size: 22,
+                          horizontal: 8, vertical: 4),
+                      leading: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.login_outlined,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                            size: 24,
+                          ),
+                          const VerticalDivider(
+                            endIndent: 10,
+                            indent: 10,
+                            color: Color.fromRGBO(158, 158, 158, 0.2),
+                          )
+                        ],
                       ),
                       title: Text(
                         'Login as $_lastLogin',
@@ -166,13 +199,23 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                    leading: Icon(
-                      Icons.key,
-                      color: Theme.of(context)
-                          .extension<CustomThemeExtension>()
-                          ?.listTileIconColor,
-                      size: 22,
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.key,
+                          color: Theme.of(context)
+                              .extension<CustomThemeExtension>()
+                              ?.listTileIconColor,
+                          size: 24,
+                        ),
+                        const VerticalDivider(
+                          endIndent: 10,
+                          indent: 10,
+                          color: Color.fromRGBO(158, 158, 158, 0.2),
+                        )
+                      ],
                     ),
                     title: Text(
                       'Import using recovery phrase',
@@ -219,13 +262,23 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                    leading: Icon(
-                      Icons.account_balance_wallet,
-                      color: Theme.of(context)
-                          .extension<CustomThemeExtension>()
-                          ?.listTileIconColor,
-                      size: 22,
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet,
+                          color: Theme.of(context)
+                              .extension<CustomThemeExtension>()
+                              ?.listTileIconColor,
+                          size: 24,
+                        ),
+                        const VerticalDivider(
+                          endIndent: 10,
+                          indent: 10,
+                          color: Color.fromRGBO(158, 158, 158, 0.2),
+                        )
+                      ],
                     ),
                     title: Text(
                       'Create new wallet',
@@ -272,13 +325,23 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                    leading: Icon(
-                      Icons.bug_report,
-                      color: Theme.of(context)
-                          .extension<CustomThemeExtension>()
-                          ?.listTileIconColor,
-                      size: 22,
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.bug_report,
+                          color: Theme.of(context)
+                              .extension<CustomThemeExtension>()
+                              ?.listTileIconColor,
+                          size: 24,
+                        ),
+                        const VerticalDivider(
+                          endIndent: 10,
+                          indent: 10,
+                          color: Color.fromRGBO(158, 158, 158, 0.2),
+                        )
+                      ],
                     ),
                     title: Text(
                       'Use DEMO Wallet',

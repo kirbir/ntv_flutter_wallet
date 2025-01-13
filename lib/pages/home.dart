@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   SolanaClient? client;
   bool _isHealthy = false;
+  bool _isLoadingTokens = true;
   num? solBalance;
   double solDollarPrice = 0;
   Map<String, double> _coinPrices = {};
@@ -50,22 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
     decimalDigits: 2,
   );
 
-  // Timer? _priceRefreshTimer;
+
 
   @override
   void initState() {
     super.initState();
     didChangeDependencies();
-
-    // Set up timer for price refresh every 15 seconds
-    // _priceRefreshTimer = Timer.periodic(
-    //   const Duration(seconds: 15),
-    //   (_)  {
-    //     if (mounted) {
-    //       _getBalance();
-    //       }
-    //       },
-    // );
   }
 
   @override
@@ -81,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // _priceRefreshTimer?.cancel();
+ 
     super.dispose();
   }
 
@@ -135,20 +126,54 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 8),
                       const SizedBox(height: 8),
                       if (_publicKey != null)
-                        Text(
-                            style: const TextStyle(fontSize: 18),
-                            '${_publicKey!.substring(0, 4)}...${_publicKey!.substring(_publicKey!.length - 4)}')
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: _publicKey!));
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Public key address copied to clipboard!'),
+                                  action: SnackBarAction(
+                                    label: 'Close',
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Close the snackbar
+                                    },
+                                  ),
+
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                              style: const TextStyle(fontSize: 18),
+                              '${_publicKey!.substring(0, 4)}...${_publicKey!.substring(_publicKey!.length - 4)}'),
+                        )
                       else
                         const Text('Loading...'),
                       IconButton(
                         onPressed: () {
                           if (_publicKey != null) {
                             Clipboard.setData(ClipboardData(text: _publicKey!));
+                                                if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                        'Public key address copied to clipboard!'),
+                                    action: SnackBarAction(
+                                      label: 'Close',
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar(); // Close the snackbar
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }
                           }
                         },
                         icon: const Icon(Icons.copy_all),
-                        iconSize: 16,
-                        color: Colors.grey,
+                        iconSize: 20,
+                        color: AppColors.success,
                       ),
                     ],
                   ),
@@ -173,7 +198,11 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               // #Region BALANCE CARD
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: Theme.of(context)
+                        .extension<CustomThemeExtension>()
+                        ?.pageTheme
+                        .padding ??
+                    const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _coinPrices.isEmpty
                             ? Shimmer.fromColors(
                                 baseColor: Colors.transparent,
-                                highlightColor: Colors.grey[600]!,
+                                highlightColor: AppColors.purpleSwagLight!,
                                 child: Container(
                                   width: 120,
                                   height: 30,
@@ -217,16 +246,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontFamily: GoogleFonts.montserrat()
                                                 .fontFamily),
                                   ),
-                                  Text(
-                                    'USD',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                            fontFamily: GoogleFonts.montserrat()
-                                                .fontFamily),
-                                    textAlign: TextAlign.end,
-                                  ),
                                 ],
                               ),
                       ],
@@ -242,24 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      spacing: 4,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton.outlined(
-                          icon: const Icon(Icons.send_to_mobile),
-                          onPressed: () {
-                            context.push('/send_tx');
-                          },
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.success
-                              : AppColors.primaryBlue,
-                          iconSize: 28,
-                        ),
-                        Text('Send',
-                            style: Theme.of(context).textTheme.bodySmall),
-                      ],
-                    ),
                     Column(
                       spacing: 4,
                       mainAxisSize: MainAxisSize.min,
@@ -285,6 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         spacing: 4,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // #Region Airdrop Button
+                          // This button is only visible on devnet
                           IconButton.outlined(
                             icon: const Icon(Icons.downloading),
                             onPressed: () async {
@@ -342,58 +345,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
-                    Column(
-                      spacing: 4,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton.outlined(
-                          icon: const Icon(Icons.copy),
-                          onPressed: () {
-                            if (_publicKey != null) {
-                              Clipboard.setData(
-                                  ClipboardData(text: _publicKey!));
-                            }
-                          },
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.success
-                              : AppColors.primaryBlue,
-                          iconSize: 28,
-                        ),
-                        Text('Copy',
-                            style: Theme.of(context).textTheme.bodySmall),
-                      ],
-                    ),
                   ],
                 ),
               ),
               // #endregion
               const SizedBox(height: 16),
               // #Region My Tokens Card
-              Center(
-                child: Column(
-                  children: [
-                    Text('My Tokens',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color.fromARGB(255, 255, 255, 255)
-                              : const Color.fromARGB(255, 0, 0, 0),
-                        )),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
               Column(
+                children: [
+                  Text('My Tokens',
+                      style: Theme.of(context).textTheme.titleLarge),
+                ],
+              ),
+              const SizedBox(height: 8),
+              (_isLoadingTokens) ? const Center(child: CircularProgressIndicator()) : Column(
                 children: [
                   ..._myTokens.map((token) => Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           children: [
                             SlidableAction(
-                              onPressed: (context) {},
-                              icon: Icons.directions_transit_filled,
-                              label: 'Send',
+                              borderRadius: BorderRadius.circular(12),
+                              backgroundColor: AppColors.cardDark,
+                              onPressed: (context) {
+                                context.push('/send_tx', extra: token);
+                              },
+                              icon: Icons.send,
+                              label: 'Send to another wallet',
                             ),
                           ],
                         ),
@@ -405,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromARGB(44, 202, 203, 255)
+                                    ? Colors.black.withAlpha(35)
                                     : AppColors.cardLight,
                             borderRadius: BorderRadius.circular(12),
                             border:
@@ -475,23 +453,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // #endregion
 
-              // Trending Coins section
+              // #Region Trending Coins 
               const SizedBox(height: 24),
-              Center(
-                child: Column(
-                  children: [
-                    Text('Trending on Birdeye.so',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color.fromARGB(255, 255, 255, 255)
-                              : const Color.fromARGB(255, 0, 0, 0),
-                        )),
-                    const SizedBox(height: 8),
-                  ],
-                ),
+              Column(
+                children: [
+                  Text('Trending on Birdeye.so',
+                      style: Theme.of(context).textTheme.titleLarge),
+                ],
               ),
+              const SizedBox(height: 8),
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: TokenMetadataService().getTrendingCoins(),
                 builder: (context, snapshot) {
@@ -594,6 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+        // #endregion
         bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
     );
@@ -636,6 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _myTokens = result.tokens;
         solBalance = result.solBalance * (solDollarPrice ?? 0);
+        _isLoadingTokens = false;
       });
     } catch (e) {
       logger.e('Error getting balance: $e');
