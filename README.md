@@ -3,11 +3,16 @@
 NTV Forritun 1. Önn 2024 - Lokaverkefni 
 Birkir Reynisson
 
-![Screenshot_20250113_220659]()
+![Screenshot_20250113_220739](https://github.com/user-attachments/assets/34668e83-c9cd-4a6f-8d79-edf235bfaae4)
+![Screenshot_20250113_220659](https://github.com/user-attachments/assets/98f050c6-328e-4f55-b8d8-79353aea7c4a)
+![Screenshot_20250113_220715](https://github.com/user-attachments/assets/9dba8a7a-35cb-4ac7-8dec-3929ffa0d28d)
+![Screenshot_20250113_220609](https://github.com/user-attachments/assets/76e2b7ab-8548-41c2-aadb-258625176c8b)
+![Screenshot_20250113_220723](https://github.com/user-attachments/assets/206f6988-263f-4cf5-9363-97fe7de132a0)
 
 
-<img src="[your-image-ur](https://github.com/user-attachments/assets/c2711cc6-64cb-4f4c-9ff0-baf5f1b0198f)l" width="280" alt="Screenshot of demo running on Devnet on my android phone">
-<img src="[[your-image-ur](https://github.com/user-attachments/assets/c2711cc6-64cb-4f4c-9ff0-baf5f1b0198f](https://github.com/user-attachments/assets/bec4ee77-751c-4eb5-abc8-603c65745111))l" width="280" alt="Screenshot of demo running on Devnet on my android phone">
+
+
+
 
 
 ## Features
