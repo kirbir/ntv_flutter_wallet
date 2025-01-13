@@ -3,12 +3,13 @@
 NTV Forritun 1. Önn 2024 - Lokaverkefni 
 Birkir Reynisson
 
-![Screenshot_20250113_220739](https://github.com/user-attachments/assets/34668e83-c9cd-4a6f-8d79-edf235bfaae4)
-![Screenshot_20250113_220659](https://github.com/user-attachments/assets/98f050c6-328e-4f55-b8d8-79353aea7c4a)
-![Screenshot_20250113_220715](https://github.com/user-attachments/assets/9dba8a7a-35cb-4ac7-8dec-3929ffa0d28d)
-![Screenshot_20250113_220609](https://github.com/user-attachments/assets/76e2b7ab-8548-41c2-aadb-258625176c8b)
-![Screenshot_20250113_220723](https://github.com/user-attachments/assets/206f6988-263f-4cf5-9363-97fe7de132a0)
-
+<div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+    <img src="https://github.com/user-attachments/assets/34668e83-c9cd-4a6f-8d79-edf235bfaae4" width="180" alt="Screenshot 1"/>
+    <img src="https://github.com/user-attachments/assets/98f050c6-328e-4f55-b8d8-79353aea7c4a" width="180" alt="Screenshot 2"/>
+    <img src="https://github.com/user-attachments/assets/9dba8a7a-35cb-4ac7-8dec-3929ffa0d28d" width="180" alt="Screenshot 3"/>
+    <img src="https://github.com/user-attachments/assets/76e2b7ab-8548-41c2-aadb-258625176c8b" width="180" alt="Screenshot 4"/>
+    <img src="https://github.com/user-attachments/assets/206f6988-263f-4cf5-9363-97fe7de132a0" width="180" alt="Screenshot 5"/>
+</div>
 
 
 
