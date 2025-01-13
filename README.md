@@ -3,7 +3,12 @@
 NTV Forritun 1. Önn 2024 - Lokaverkefni 
 Birkir Reynisson
 
-<img src="your-image-url" width="280" alt="Screenshot of demo running on Devnet in android emulator">
+![Screenshot_20250113_220659]()
+
+
+<img src="[your-image-ur](https://github.com/user-attachments/assets/c2711cc6-64cb-4f4c-9ff0-baf5f1b0198f)l" width="280" alt="Screenshot of demo running on Devnet on my android phone">
+<img src="[[your-image-ur](https://github.com/user-attachments/assets/c2711cc6-64cb-4f4c-9ff0-baf5f1b0198f](https://github.com/user-attachments/assets/bec4ee77-751c-4eb5-abc8-603c65745111))l" width="280" alt="Screenshot of demo running on Devnet on my android phone">
+
 
 ## Features
 
