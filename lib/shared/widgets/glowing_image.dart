@@ -25,12 +25,12 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
     
-    _animation = Tween<double>(begin: 1.0, end: 2.8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInToLinear),
+    _animation = Tween<double>(begin: 1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInCirc),
     );
   }
 
@@ -66,10 +66,10 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
               boxShadow: [
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? const Color.fromARGB(255, 47, 5, 61).withAlpha(77)
+                      ? const Color.fromARGB(255, 248, 183, 231).withAlpha(100)
                       : AppColors.primaryBlue.withAlpha(77),
-                  blurRadius: 30 * _animation.value,
-                  spreadRadius: 2 * _animation.value,
+                  blurRadius: 25 * _animation.value,
+                  spreadRadius: 5 * _animation.value,
                 ),
               ],
             ),
@@ -78,8 +78,8 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
               child: CircleAvatar(
                 radius: widget.size / 2,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.purpleSwagLight.withAlpha(50)
-                    : AppColors.primaryBlue.withAlpha(50),
+                    ? const Color.fromARGB(255, 225, 166, 202).withAlpha(50)
+                    : AppColors.primaryBlue.withAlpha(90),
                 child: ClipOval(
                   child: Image.asset(
                     widget.imagePath,

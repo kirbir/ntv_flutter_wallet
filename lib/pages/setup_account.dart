@@ -132,7 +132,7 @@ class _SetupScreenState extends State<SetupScreen> {
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                          horizontal: 16, vertical: 4),
                       leading: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -197,7 +197,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     leading: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -259,7 +259,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     leading: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -323,7 +323,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                   child: ListTile(
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     leading: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
