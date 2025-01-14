@@ -30,7 +30,7 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
     )..repeat(reverse: true);
     
     _animation = Tween<double>(begin: 1.0, end: 2.8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInCirc),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInToLinear),
     );
   }
 
@@ -53,7 +53,7 @@ class _GlowingImageState extends State<GlowingImage> with SingleTickerProviderSt
               gradient: SweepGradient(
                 colors: Theme.of(context).brightness == Brightness.dark
                     ? [
-                        const Color.fromARGB(255, 236, 96, 180).withAlpha(128),
+                       const Color.fromARGB(255, 4, 199, 150).withAlpha(128),
                         const Color.fromARGB(255, 29, 82, 205).withAlpha(128),
                         AppColors.success.withAlpha(128),
                       ]
